@@ -4,6 +4,7 @@ import { useStore } from '../store/useStore.js'
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { getLenis } from '../lib/lenis.js'
 import Magnetic from './Magnetic.jsx'
+import { ScrollProgress, CursorGlow, useRipple, useScrollFx } from './fx.jsx'
 
 const linkCls = ({ isActive }) =>
   `relative transition-colors ${isActive ? 'text-lime' : 'text-muted hover:text-bone'}`
@@ -15,6 +16,8 @@ export default function Layout() {
   const setCurrency = useStore((s) => s.setCurrency)
 
   const mainRef = useRef(null)
+  useRipple()
+  useScrollFx(mainRef, pathname)
   const headerRef = useRef(null)
   const badgeRef = useRef(null)
 
@@ -57,6 +60,8 @@ export default function Layout() {
   return (
     <div className="grain min-h-screen flex flex-col">
       <div className="ambient" />
+      <ScrollProgress />
+      <CursorGlow />
 
       <header ref={headerRef} className="sticky top-0 z-40 bg-ink/75 backdrop-blur-md border-b border-line">
         <div className="grad-stream absolute inset-x-0 top-0 h-[2px]" aria-hidden="true" />

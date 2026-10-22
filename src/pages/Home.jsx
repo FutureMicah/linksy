@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import ProductCard from '../components/ProductCard.jsx'
 import Cover from '../components/Cover.jsx'
+import ArtStrip from '../components/ArtStrip.jsx'
 import Hero from '../components/Hero.jsx'
 import Marquee from '../components/Marquee.jsx'
 import FeaturedCarousel from '../components/FeaturedCarousel.jsx'
@@ -103,8 +104,13 @@ export default function Home() {
             <div className="card p-6 flex flex-col gap-2"><span className="font-display text-xs text-cyan">03</span><h3 className="font-display text-lg">Verified sellers</h3><p className="text-muted text-sm">Every listing is vetted by linksy before it goes live.</p></div>
           </section>
 
+          <section data-reveal aria-label="Browse">
+            <h2 className="font-display text-xl mb-4"><span data-io="line" data-io-stagger="0"><span data-io="crawl">Browse the wall</span></span></h2>
+            <ArtStrip items={listings.filter((l) => l.status !== 'hidden').slice(0, 10)} />
+          </section>
+
           <section data-reveal aria-label="How it works">
-            <h2 className="font-display text-xl mb-4">How it works</h2>
+            <h2 className="font-display text-xl mb-4" data-io="slide" data-head>How it works</h2>
             <ol className="grid gap-4 md:grid-cols-3">
               <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">1</span><div><p className="font-display">Pick listing</p><p className="text-muted text-sm">Choose the account or gift card you want.</p></div></li>
               <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">2</span><div><p className="font-display">Pay by bank transfer</p><p className="text-muted text-sm">Send the exact naira amount to the account shown at checkout.</p></div></li>
@@ -113,7 +119,7 @@ export default function Home() {
           </section>
 
           <section data-reveal aria-label="FAQ">
-            <h2 className="font-display text-xl mb-4">Questions</h2>
+            <h2 className="font-display text-xl mb-4" data-io="crawl">Questions</h2>
             <div className="flex flex-col gap-2">
               {FAQS.map((f) => (
                 <details key={f.q} className="card p-5 group">

@@ -6,7 +6,7 @@ import { formatPrice, stockLabel } from '../lib/format.js'
 import { categoryById } from '../config.js'
 import Cover from './Cover.jsx'
 import VerifiedSeller from './VerifiedSeller.jsx'
-import { gsap, useGSAP, finePointer, reducedMotion } from '../lib/motion.js'
+import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 
 const toneClass = {
   lime: 'text-lime border-lime/40 bg-lime/5',
@@ -23,27 +23,51 @@ function ProductCard({ listing }) {
   const ref = useRef(null)
   const btnRef = useRef(null)
 
-  // subtle 3D tilt on fine pointers (inline transform; hover lift uses the separate
-  // CSS `translate`/`scale` properties so the two compose without fighting)
+  // tilt toward the pointer: mouse on hover, finger while pressed on touch (smaller amplitude)
   useGSAP(
     () => {
       const el = ref.current
-      if (!el || reducedMotion() || !finePointer()) return
+      if (!el || reducedMotion()) return
       const rx = gsap.quickTo(el, 'rotationX', { duration: 0.5, ease: 'power3.out' })
       const ry = gsap.quickTo(el, 'rotationY', { duration: 0.5, ease: 'power3.out' })
-      const move = (e) => {
+      let touching = false
+      const aim = (e, amp) => {
         const r = el.getBoundingClientRect()
-        ry(((e.clientX - r.left) / r.width - 0.5) * 8)
-        rx(-((e.clientY - r.top) / r.height - 0.5) * 8)
+        ry(((e.clientX - r.left) / r.width - 0.5) * amp)
+        rx(-((e.clientY - r.top) / r.height - 0.5) * amp)
       }
-      const leave = () => {
+      const move = (e) => {
+        if (e.pointerType === 'mouse') aim(e, 8)
+        else if (touching) aim(e, 5)
+      }
+      const down = (e) => {
+        if (e.pointerType !== 'mouse') {
+          touching = true
+          aim(e, 5)
+        }
+      }
+      const up = () => {
+        if (!touching) return
+        touching = false
         rx(0)
         ry(0)
       }
+      const leave = (e) => {
+        if (e.pointerType === 'mouse') {
+          rx(0)
+          ry(0)
+        }
+      }
       el.addEventListener('pointermove', move)
+      el.addEventListener('pointerdown', down)
+      el.addEventListener('pointerup', up)
+      el.addEventListener('pointercancel', up)
       el.addEventListener('pointerleave', leave)
       return () => {
         el.removeEventListener('pointermove', move)
+        el.removeEventListener('pointerdown', down)
+        el.removeEventListener('pointerup', up)
+        el.removeEventListener('pointercancel', up)
         el.removeEventListener('pointerleave', leave)
       }
     },
@@ -63,11 +87,14 @@ function ProductCard({ listing }) {
       <div
         ref={ref}
         style={{ transformPerspective: 900 }}
+        data-ripple
         className="tile card sheen flex flex-col overflow-hidden group"
       >
         <Link to={`/product/${listing.id}`} className="block">
           <div className="tile-media relative h-40 md:h-48">
-            <Cover listing={listing} className="h-full w-full" />
+            <div data-drift="0.12" className="h-full w-full scale-[1.12]">
+              <Cover listing={listing} className="h-full w-full" />
+            </div>
             <span className="absolute bottom-2.5 left-2.5"><PlatformBadge listing={listing} /></span>
             {listing.featured && !soldOut && (
               <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>

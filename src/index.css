@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/fx.css";
 
 /* light medical-glass theme. Token names are kept so existing components keep working. */
 @theme {
