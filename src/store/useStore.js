@@ -18,12 +18,14 @@ export const useStore = create(
   persist(
     (set, get) => ({
       currency: 'NGN',
+      spiderOn: true,
       listings: SEED_LISTINGS,
       cart: [], // [{ id, qty }]
       orders: [],
       reviews: [], // [{ id, order_id, listing_ids, rating, comment, author, created_at }]
 
       setCurrency: (currency) => set({ currency }),
+      setSpiderOn: (spiderOn) => set({ spiderOn }),
 
       // ---- cart ----
       addToCart: (id) => {

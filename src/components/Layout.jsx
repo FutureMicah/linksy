@@ -5,6 +5,7 @@ import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { getLenis } from '../lib/lenis.js'
 import Magnetic from './Magnetic.jsx'
 import { ScrollProgress, CursorGlow, useRipple, useScrollFx } from './fx.jsx'
+import Spider from './Spider.jsx'
 
 const linkCls = ({ isActive }) =>
   `relative transition-colors ${isActive ? 'text-lime' : 'text-muted hover:text-bone'}`
@@ -14,6 +15,8 @@ export default function Layout() {
   const cartCount = useStore((s) => s.cart.reduce((n, c) => n + c.qty, 0))
   const currency = useStore((s) => s.currency)
   const setCurrency = useStore((s) => s.setCurrency)
+  const spiderOn = useStore((s) => s.spiderOn)
+  const setSpiderOn = useStore((s) => s.setSpiderOn)
 
   const mainRef = useRef(null)
   useRipple()
@@ -62,6 +65,7 @@ export default function Layout() {
       <div className="ambient" />
       <ScrollProgress />
       <CursorGlow />
+      {spiderOn && !reducedMotion() && <Spider />}
 
       <header ref={headerRef} className="sticky top-0 z-40 bg-ink/75 backdrop-blur-md border-b border-line">
         <div className="grad-stream absolute inset-x-0 top-0 h-[2px]" aria-hidden="true" />
@@ -135,6 +139,14 @@ export default function Layout() {
             LINK<span className="text-lime">SY</span>. DIGITAL GOODS, DELIVERED AFTER PAYMENT.
           </span>
           <span>Checkout is a manual bank transfer. Bank details are placeholders until you set them in your env.</span>
+          <button
+            type="button"
+            onClick={() => setSpiderOn(!spiderOn)}
+            aria-pressed={spiderOn}
+            className="tap self-start md:self-auto rounded-full border border-line px-3 py-1.5 text-[11px] font-display text-bone/80 hover:text-bone transition-colors"
+          >
+            spider: {spiderOn ? 'on' : 'off'}
+          </button>
         </div>
       </footer>
     </div>
