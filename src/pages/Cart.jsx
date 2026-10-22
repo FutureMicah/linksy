@@ -4,6 +4,7 @@ import { useStore } from '../store/useStore.js'
 import { formatPrice } from '../lib/format.js'
 import { useReveal } from '../lib/motion.js'
 import Magnetic from '../components/Magnetic.jsx'
+import Cover from '../components/Cover.jsx'
 
 export default function Cart() {
   const cart = useStore((s) => s.cart)
@@ -36,8 +37,8 @@ export default function Cart() {
         <h1 data-reveal className="font-display text-4xl md:text-5xl">Cart</h1>
         {lines.map(({ id, qty, listing }) => (
           <div key={id} data-reveal className="card p-3 md:p-4 flex gap-3 items-center">
-            <div className="cover w-16 h-16 md:w-20 md:h-20 shrink-0 grid place-items-center border border-line text-3xl md:text-4xl">
-              {listing.cover}
+            <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl overflow-hidden">
+              <Cover listing={listing} className="h-full w-full" />
             </div>
             <div className="flex-1 min-w-0">
               <Link to={`/product/${id}`} className="font-semibold hover:text-lime line-clamp-2">{listing.title}</Link>

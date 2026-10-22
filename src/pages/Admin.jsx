@@ -185,7 +185,7 @@ function Listings() {
               return (
                 <tr key={l.id} className="border-b border-line last:border-0 hover:bg-white/[0.02] transition-colors">
                   <td className="p-3">
-                    <div className="font-semibold">{l.cover} {l.title}</div>
+                    <div className="font-semibold">{l.title}</div>
                     <div className="text-[11px] text-muted">{l.id}</div>
                   </td>
                   <td className="p-3 capitalize">{l.category}</td>

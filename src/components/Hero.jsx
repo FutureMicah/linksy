@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { gsap, useGSAP, reducedMotion, finePointer } from '../lib/motion.js'
 import { CATEGORIES } from '../config.js'
 import Magnetic from './Magnetic.jsx'
+import Cover from './Cover.jsx'
 
 const ORB_SPEED = [0.3, 0.55, 0.18]
 
@@ -111,7 +112,7 @@ export default function Hero({ stats }) {
                 data-speed={ORB_SPEED[i]}
                 className={`orb absolute ${pos} rounded-2xl flex flex-col items-center justify-center gap-2`}
               >
-                <span className="text-5xl md:text-7xl drop-shadow-[0_0_18px_rgba(217,185,122,0.5)]">{c.icon}</span>
+                <Cover category={c.id} className="h-[62%] w-[62%] rounded-2xl" />
                 <span className="font-display text-[11px] md:text-xs tracking-widest text-bone">{c.short}</span>
               </div>
             )

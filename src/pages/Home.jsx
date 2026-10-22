@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import ProductCard from '../components/ProductCard.jsx'
+import Cover from '../components/Cover.jsx'
 import Hero from '../components/Hero.jsx'
 import Marquee from '../components/Marquee.jsx'
 import { CATEGORIES, categoryById } from '../config.js'
@@ -80,7 +81,7 @@ export default function Home() {
                   </div>
                 </div>
                 <span className="text-4xl md:text-5xl transition-transform duration-500 group-hover:scale-125 group-hover:-rotate-12">
-                  {c.icon}
+                <Cover category={c.id} className="h-[62%] w-[62%] rounded-2xl" />
                 </span>
               </Link>
             ))}
@@ -92,8 +93,7 @@ export default function Home() {
         <div data-reveal>
           <p className="font-display text-xs text-cyan tracking-[0.3em]">CATEGORY</p>
           <h1 className="font-display text-4xl md:text-6xl mt-1 leading-none">
-            <span className="mr-2">{activeCat.icon}</span>
-            {activeCat.label}
+              {activeCat.label}
           </h1>
         </div>
       )}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { formatPrice, stockLabel } from '../lib/format.js'
 import { categoryById } from '../config.js'
+import Cover from './Cover.jsx'
 import { gsap, useGSAP, finePointer, reducedMotion } from '../lib/motion.js'
 
 const toneClass = {
@@ -61,10 +62,8 @@ function ProductCard({ listing }) {
       className="card card-hover sheen flex flex-col overflow-hidden group"
     >
       <Link to={`/product/${listing.id}`} className="block">
-        <div className="cover cover-grid relative h-36 md:h-44 grid place-items-center border-b border-line">
-          <span className="text-6xl md:text-7xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 drop-shadow-[0_0_20px_rgba(217,185,122,0.35)]">
-            {listing.cover}
-          </span>
+        <div className="relative h-40 md:h-48">
+          <Cover listing={listing} className="h-full w-full transition-transform duration-700 group-hover:scale-105" />
           {listing.featured && !soldOut && (
             <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
           )}

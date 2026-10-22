@@ -4,6 +4,7 @@ import { useStore } from '../store/useStore.js'
 import { formatPrice, stockLabel } from '../lib/format.js'
 import { categoryById } from '../config.js'
 import ProductCard from '../components/ProductCard.jsx'
+import Cover from '../components/Cover.jsx'
 import Magnetic from '../components/Magnetic.jsx'
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { useReveal } from '../lib/motion.js'
@@ -61,10 +62,9 @@ export default function Product() {
       </nav>
 
       <div className="grid md:grid-cols-2 gap-6 md:gap-10">
-        <div data-reveal className="cover cover-grid card relative h-72 md:h-auto md:min-h-[420px] grid place-items-center overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(217,185,122,0.22),transparent_60%)] pointer-events-none" />
-          <span data-pop className="relative text-[120px] md:text-[160px] drop-shadow-[0_0_40px_rgba(217,185,122,0.5)]">{listing.cover}</span>
-          {soldOut && <span className="absolute top-4 left-4 bg-danger text-ink font-display text-sm px-3 py-1">SOLD OUT</span>}
+        <div data-reveal className="card relative h-72 md:h-auto md:min-h-[420px] overflow-hidden rounded-[2rem]">
+          <Cover listing={listing} eager className="absolute inset-0 rounded-none" />
+          {soldOut && <span className="absolute top-4 left-4 bg-danger text-white font-display text-sm px-3.5 py-1 rounded-full">Sold out</span>}
         </div>
 
         <div className="flex flex-col gap-5">
