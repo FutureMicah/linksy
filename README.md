@@ -1,54 +1,42 @@
-# Craft Swap Spark
+# accountplug
 
-Concept:
+A dark, motion-heavy marketplace for gaming accounts, social media accounts and redeemable gift cards. Prices are in Naira (₦) with a USD equivalent. Checkout is a manual bank transfer followed by a WhatsApp proof link.
 
-Create a warm, modern digital platform design that embodies connection, trust, and creativity, The brand should feel approachable yet professional, blending the friendliness of social apps with the reliability of a marketplace.
+## What's inside
 
-🎨 Visual Style
+- Three categories: gaming accounts, social accounts, gift cards
+- Search, in-stock filter, max-price filter, sort (newest, price up, price down)
+- Product pages with Naira price, USD equivalent, specs and related listings
+- Cart with quantity controls and stock limits
+- Checkout that reserves stock the moment an order is placed
+- Order page with exact transfer amount, narration (order reference) and a prefilled WhatsApp proof link
+- PIN-gated admin at /admin: add, edit, delete, mark sold and restock listings, and move orders through awaiting transfer, paid, delivered, cancelled (cancelling returns the reserved stock)
 
-• Color Palette: Soft gradients of coral pink, lavender, and cream with subtle gold accents.
+## Motion and performance
 
-• Typography: Rounded sans-serif fonts (like Poppins or Nunito) for friendliness and clarity.
+- GSAP with ScrollTrigger: scroll reveals, staggered hero entrance, parallax orbs, animated counters, page-in transitions
+- @gsap/react hooks for clean setup and teardown
+- Lenis smooth scrolling, driven from GSAP's ticker so scroll triggers stay in sync
+- Magnetic buttons and 3D tilt cards on fine pointers only (desktop)
+- Route-level code splitting: admin, checkout, cart, product and order pages load on demand
+- Mobile-first layout, down to 360px
+- prefers-reduced-motion is respected: animations and smooth scroll are turned off
 
-• Mood: Inviting, optimistic, and human-centered — users should feel emotionally connected.
+## Run it
 
-🧩 Layout Inspiration
+Install dependencies, copy the example env file to .env.local, fill in your bank details and admin PIN, then start the dev server. Use the build script for production.
 
-• Header: Minimal logo 
+## Config (.env.local)
 
-• Sections:• “Hire Experts You’ll Love” — cards for web developers, designers, marketers.
+- VITE_ADMIN_PIN: PIN for /admin
+- VITE_BANK_NAME, VITE_BANK_ACCOUNT_NAME, VITE_BANK_ACCOUNT_NUMBER: shown at checkout
+- VITE_USD_RATE: naira per dollar used for the USD equivalent
+- VITE_SUPPORT_WHATSAPP: international number for the proof link, digits only (for example 2348012345678)
 
-• “Buy & Sell Digital Goods” — marketplace grid for social accounts, gift cards, and services.
+## Data
 
-• “Wallet & Rewards” — inspired by the sleek wallet UI, showing balance and transactions.
+Demo listings are seeded in src/data/seed.js. Listings and orders are saved to the browser (localStorage) by default. supabase/schema.sql is included for moving the data to Supabase when you're ready.
 
-• “Community” — testimonials and trust badges to reinforce safety and connection.
+## Stack
 
-🌟 Interaction Feel
-
-• Smooth animations, hover glows, and micro-interactions that make every click feel rewarding.
-
-• Use subtle heart or sparkle motifs to reinforce the “Lovable” identity.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://craft-swap-spark.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/7d53275b-c286-4bd7-abb0-157a3052b6fd).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+React 19, Vite, Tailwind CSS 4, React Router 7, Zustand, GSAP, Lenis.

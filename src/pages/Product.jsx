@@ -1,0 +1,126 @@
+import { useRef } from 'react'
+import { Link, useParams, useNavigate } from 'react-router-dom'
+import { useStore } from '../store/useStore.js'
+import { formatPrice, stockLabel } from '../lib/format.js'
+import { categoryById } from '../config.js'
+import ProductCard from '../components/ProductCard.jsx'
+import Magnetic from '../components/Magnetic.jsx'
+import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
+import { useReveal } from '../lib/motion.js'
+
+const toneText = { lime: 'text-lime', amber: 'text-amber', danger: 'text-danger' }
+
+export default function Product() {
+  const { id } = useParams()
+  const navigate = useNavigate()
+  const listing = useStore((s) => s.listings.find((l) => l.id === id))
+  const listings = useStore((s) => s.listings)
+  const currency = useStore((s) => s.currency)
+  const addToCart = useStore((s) => s.addToCart)
+  const scope = useRef(null)
+  useReveal(scope, [id])
+
+  // hero art parallax + price count-in
+  useGSAP(
+    () => {
+      if (reducedMotion() || !listing) return
+      gsap.from('[data-pop]', { scale: 0.6, opacity: 0, duration: 1.1, ease: 'back.out(1.6)' })
+      gsap.from('[data-pdetail]', { opacity: 0, x: 24, duration: 0.8, stagger: 0.08, ease: 'power3.out', delay: 0.15 })
+    },
+    { scope, dependencies: [id] },
+  )
+
+  if (!listing) {
+    return (
+      <div className="card p-10 text-center">
+        <p className="font-display text-xl">Listing not found</p>
+        <Link to="/" className="btn-ghost mt-4 inline-flex">BACK TO SHOP</Link>
+      </div>
+    )
+  }
+
+  const cat = categoryById(listing.category)
+  const stock = stockLabel(listing)
+  const soldOut = listing.status === 'sold' || listing.stock <= 0
+  const related = listings
+    .filter((l) => l.category === listing.category && l.id !== listing.id && l.status === 'active' && l.stock > 0)
+    .slice(0, 4)
+
+  const buyNow = () => {
+    if (addToCart(listing.id)) navigate('/checkout')
+  }
+
+  return (
+    <div ref={scope} className="flex flex-col gap-8">
+      <nav data-reveal className="text-xs font-display text-muted flex flex-wrap gap-2">
+        <Link to="/" className="hover:text-lime">SHOP</Link>
+        <span>/</span>
+        <Link to={`/category/${listing.category}`} className="hover:text-lime">{cat?.short.toUpperCase()}</Link>
+        <span>/</span>
+        <span className="text-bone truncate">{listing.brand.toUpperCase()}</span>
+      </nav>
+
+      <div className="grid md:grid-cols-2 gap-6 md:gap-10">
+        <div data-reveal className="cover cover-grid card relative h-72 md:h-auto md:min-h-[420px] grid place-items-center overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(182,255,59,0.22),transparent_60%)] pointer-events-none" />
+          <span data-pop className="relative text-[120px] md:text-[160px] drop-shadow-[0_0_40px_rgba(182,255,59,0.5)]">{listing.cover}</span>
+          {soldOut && <span className="absolute top-4 left-4 bg-danger text-ink font-display text-sm px-3 py-1">SOLD OUT</span>}
+        </div>
+
+        <div className="flex flex-col gap-5">
+          <div data-pdetail>
+            <p className="font-display text-xs text-amber tracking-[0.25em]">{listing.brand.toUpperCase()}</p>
+            <h1 className="font-display text-3xl md:text-5xl leading-[0.95] mt-2">{listing.title}</h1>
+          </div>
+
+          <div data-pdetail className="flex items-end gap-4 flex-wrap">
+            <span className="font-display text-4xl md:text-5xl text-lime text-glow">{formatPrice(listing.price_ngn, currency)}</span>
+            {currency === 'NGN' && <span className="text-muted text-sm mb-2">≈ {formatPrice(listing.price_ngn, 'USD')}</span>}
+          </div>
+
+          <div data-pdetail className="flex items-center gap-2">
+            <span className="text-xs font-display text-muted">STATUS</span>
+            <span className={`font-display text-sm ${toneText[stock.tone]}`}>{stock.text}</span>
+          </div>
+
+          <p data-pdetail className="text-muted leading-relaxed">{listing.description}</p>
+
+          <div data-pdetail className="flex flex-col sm:flex-row gap-3">
+            <Magnetic className="flex-1">
+              <button disabled={soldOut} onClick={() => addToCart(listing.id)} className="btn w-full">ADD TO CART</button>
+            </Magnetic>
+            <Magnetic className="flex-1">
+              <button disabled={soldOut} onClick={buyNow} className="btn-ghost w-full">BUY NOW</button>
+            </Magnetic>
+          </div>
+          <p data-pdetail className="text-xs text-muted">
+            Manual bank transfer at checkout. Credentials or codes are sent in the order chat after we confirm your payment.
+          </p>
+        </div>
+      </div>
+
+      <section data-reveal className="card p-5 md:p-7">
+        <h2 className="font-display text-xl mb-4">SPECS</h2>
+        <dl className="grid sm:grid-cols-2 gap-x-8 gap-y-1 text-sm">
+          {Object.entries(listing.specs || {}).map(([k, v]) => (
+            <div key={k} className="flex justify-between gap-4 border-b border-line py-2.5">
+              <dt className="text-muted">{k}</dt>
+              <dd className="text-right">{String(v)}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {related.length > 0 && (
+        <section>
+          <h2 data-reveal className="font-display text-xl mb-4">MORE {cat?.short.toUpperCase()}</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+            {related.map((l) => (
+              <ProductCard key={l.id} listing={l} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  )
+}
