@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
+import InstallPrompt from './components/InstallPrompt.jsx'
 import Home from './pages/Home.jsx'
 import { initSmoothScroll, getLenis } from './lib/lenis.js'
 import { ScrollTrigger } from './lib/motion.js'
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
+      <InstallPrompt />
     </Suspense>
   )
 }

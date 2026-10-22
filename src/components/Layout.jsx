@@ -61,7 +61,7 @@ export default function Layout() {
       <header ref={headerRef} className="sticky top-0 z-40 bg-ink/75 backdrop-blur-md border-b border-line">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-3">
           <Link data-nav to="/" className="flex items-center gap-2 shrink-0">
-            <span className="grid place-items-center w-8 h-8 bg-lime text-ink font-display text-sm shadow-[0_0_24px_rgba(182,255,59,0.55)]">
+            <span className="grid place-items-center w-8 h-8 bg-lime text-ink font-display text-sm shadow-[0_0_24px_rgba(217,185,122,0.55)]">
               AP
             </span>
             <span className="font-display text-xl md:text-2xl leading-none tracking-wide">
@@ -94,7 +94,7 @@ export default function Layout() {
                 {cartCount > 0 && (
                   <span
                     ref={badgeRef}
-                    className="absolute -top-2 -right-2 bg-cyan text-ink text-[10px] font-bold min-w-5 h-5 px-1 grid place-items-center rounded-full shadow-[0_0_14px_rgba(71,230,255,0.7)]"
+                    className="absolute -top-2 -right-2 bg-gold text-ink text-[10px] font-bold min-w-5 h-5 px-1 grid place-items-center rounded-full shadow-[0_0_14px_rgba(217,185,122,0.5)]"
                   >
                     {cartCount}
                   </span>

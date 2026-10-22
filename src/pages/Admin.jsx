@@ -157,7 +157,7 @@ function Listings() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 border transition-colors ${filter === f ? 'border-lime text-lime shadow-[0_0_16px_-4px_rgba(182,255,59,0.6)]' : 'border-line text-muted hover:text-bone'}`}
+              className={`px-3 py-1.5 border transition-colors ${filter === f ? 'border-lime text-lime shadow-[0_0_16px_-4px_rgba(217,185,122,0.6)]' : 'border-line text-muted hover:text-bone'}`}
             >
               {f.toUpperCase()}
             </button>

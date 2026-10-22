@@ -59,6 +59,7 @@ export default function Hero({ stats }) {
   return (
     <section ref={ref} onPointerMove={onMove} className="relative overflow-hidden border border-line bg-panel/40 md:rounded-sm">
       <div className="spot pointer-events-none absolute inset-0" />
+      <div className="light-leak" aria-hidden="true" />
       <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-lime/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-cyan/10 blur-3xl pointer-events-none" />
 
@@ -110,7 +111,7 @@ export default function Hero({ stats }) {
                 data-speed={ORB_SPEED[i]}
                 className={`orb absolute ${pos} rounded-2xl flex flex-col items-center justify-center gap-2`}
               >
-                <span className="text-5xl md:text-7xl drop-shadow-[0_0_18px_rgba(182,255,59,0.5)]">{c.icon}</span>
+                <span className="text-5xl md:text-7xl drop-shadow-[0_0_18px_rgba(217,185,122,0.5)]">{c.icon}</span>
                 <span className="font-display text-[11px] md:text-xs tracking-widest text-bone">{c.short}</span>
               </div>
             )

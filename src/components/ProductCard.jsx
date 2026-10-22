@@ -58,11 +58,11 @@ function ProductCard({ listing }) {
       ref={ref}
       data-reveal
       style={{ transformPerspective: 900 }}
-      className="card card-hover flex flex-col overflow-hidden group"
+      className="card card-hover sheen flex flex-col overflow-hidden group"
     >
       <Link to={`/product/${listing.id}`} className="block">
         <div className="cover cover-grid relative h-36 md:h-44 grid place-items-center border-b border-line">
-          <span className="text-6xl md:text-7xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 drop-shadow-[0_0_20px_rgba(182,255,59,0.35)]">
+          <span className="text-6xl md:text-7xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6 drop-shadow-[0_0_20px_rgba(217,185,122,0.35)]">
             {listing.cover}
           </span>
           {listing.featured && !soldOut && (
