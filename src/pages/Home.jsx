@@ -9,6 +9,13 @@ import FeaturedCarousel from '../components/FeaturedCarousel.jsx'
 import { CATEGORIES, categoryById } from '../config.js'
 import { useReveal } from '../lib/motion.js'
 
+const FAQS = [
+  { q: 'How long does delivery take?', a: 'Usually within minutes of payment being confirmed. Credentials are sent to your WhatsApp chat.' },
+  { q: 'What payment methods are accepted?', a: 'Manual bank transfer in naira to the account shown at checkout. Send the exact amount and share your proof of payment.' },
+  { q: 'Are the accounts safe to use?', a: 'Every listing states its status. We hand over only what is described, and support is available in chat if anything is off.' },
+  { q: 'What is your refund policy?', a: 'If the delivery does not match the listing or you cannot access what you paid for, contact us in chat within the stated window and we review it for a refund or replacement.' },
+]
+
 const SORTS = {
   newest: 'Newest',
   price_asc: 'Price: low to high',
@@ -89,6 +96,32 @@ export default function Home() {
                 </span>
               </Link>
             ))}
+          </section>
+          <section data-reveal className="grid gap-4 md:grid-cols-3" aria-label="Why choose linksy">
+            <div className="card p-6 flex flex-col gap-2"><span className="font-display text-xs text-cyan">01</span><h3 className="font-display text-lg">Instant chat delivery</h3><p className="text-muted text-sm">Your credentials land in your WhatsApp chat the moment payment is confirmed.</p></div>
+            <div className="card p-6 flex flex-col gap-2"><span className="font-display text-xs text-cyan">02</span><h3 className="font-display text-lg">Escrow-style manual verification</h3><p className="text-muted text-sm">We check every bank transfer by hand before anything is released.</p></div>
+            <div className="card p-6 flex flex-col gap-2"><span className="font-display text-xs text-cyan">03</span><h3 className="font-display text-lg">Verified sellers</h3><p className="text-muted text-sm">Every listing is vetted by linksy before it goes live.</p></div>
+          </section>
+
+          <section data-reveal aria-label="How it works">
+            <h2 className="font-display text-xl mb-4">How it works</h2>
+            <ol className="grid gap-4 md:grid-cols-3">
+              <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">1</span><div><p className="font-display">Pick listing</p><p className="text-muted text-sm">Choose the account or gift card you want.</p></div></li>
+              <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">2</span><div><p className="font-display">Pay by bank transfer</p><p className="text-muted text-sm">Send the exact naira amount to the account shown at checkout.</p></div></li>
+              <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">3</span><div><p className="font-display">Receive credentials in WhatsApp chat</p><p className="text-muted text-sm">We confirm payment and send your delivery to your WhatsApp chat.</p></div></li>
+            </ol>
+          </section>
+
+          <section data-reveal aria-label="FAQ">
+            <h2 className="font-display text-xl mb-4">Questions</h2>
+            <div className="flex flex-col gap-2">
+              {FAQS.map((f) => (
+                <details key={f.q} className="card p-5 group">
+                  <summary className="cursor-pointer font-display text-sm list-none flex justify-between gap-4">{f.q}<span className="text-cyan group-open:rotate-45 transition-transform">+</span></summary>
+                  <p className="text-muted text-sm mt-3 leading-relaxed">{f.a}</p>
+                </details>
+              ))}
+            </div>
           </section>
         </>
       )}

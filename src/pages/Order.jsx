@@ -9,7 +9,7 @@ import Magnetic from '../components/Magnetic.jsx'
 const STATUS_COPY = {
   awaiting_transfer: { label: 'AWAITING PAYMENT', tone: 'text-amber', note: 'Send the exact transfer, then share proof on WhatsApp.' },
   paid: { label: 'PAID', tone: 'text-lime', note: 'Payment confirmed. Delivery is on its way to your WhatsApp.' },
-  delivered: { label: 'DELIVERED', tone: 'text-lime', note: 'Delivered. Thanks for buying from accountplug.' },
+  delivered: { label: 'DELIVERED', tone: 'text-lime', note: 'Delivered. Thanks for buying from linksy.' },
   cancelled: { label: 'CANCELLED', tone: 'text-danger', note: 'This order was cancelled and stock returned.' },
 }
 
@@ -30,7 +30,7 @@ export default function Order() {
   }
 
   const st = STATUS_COPY[order.status] || STATUS_COPY.awaiting_transfer
-  const waText = encodeURIComponent(`Hi accountplug, I placed order ${order.id} (${formatPrice(order.total_ngn, 'NGN')}). Here is my proof of payment.`)
+  const waText = encodeURIComponent(`Hi linksy, I placed order ${order.id} (${formatPrice(order.total_ngn, 'NGN')}). Here is my proof of payment.`)
 
   return (
     <div ref={scope} className="max-w-2xl mx-auto flex flex-col gap-4">

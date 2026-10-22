@@ -72,7 +72,7 @@ export default function Hero({ stats }) {
           <h1 className="font-display uppercase leading-[0.88] text-[clamp(3.2rem,14vw,7.5rem)]">
             <span className="block overflow-hidden pb-1"><span data-hero-line className="block">Gaming</span></span>
             <span className="block overflow-hidden pb-1"><span data-hero-line className="block">accounts.</span></span>
-            <span className="block overflow-hidden pb-1"><span data-hero-line className="block text-lime text-glow">Gift cards.</span></span>
+            <span className="block overflow-hidden pb-1"><span data-hero-line className="block grad-text">Gift cards.</span></span>
           </h1>
           <p data-hero-fade className="text-muted max-w-md text-[15px] leading-relaxed">
             Socials and gift cards too. Pay the exact amount by bank transfer in naira, then get your delivery in the chat once we confirm.

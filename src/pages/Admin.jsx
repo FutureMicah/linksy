@@ -4,7 +4,7 @@ import { formatPrice, stockLabel } from '../lib/format.js'
 import { CATEGORIES, CONFIG } from '../config.js'
 import { useReveal } from '../lib/motion.js'
 
-const SESSION_KEY = 'accountplug-admin-ok'
+const SESSION_KEY = 'linksy-admin-ok'
 
 const EMPTY = {
   id: '',

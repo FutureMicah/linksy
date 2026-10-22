@@ -31,14 +31,14 @@ export default function InstallPrompt() {
   return (
     <div
       role="dialog"
-      aria-label="install accountplug app"
+      aria-label="install linksy app"
       className="install-enter glass glow-gold fixed left-3 right-3 z-[80] mx-auto max-w-md rounded-sm p-4"
       style={{ bottom: 'calc(1rem + env(safe-area-inset-bottom))' }}
     >
       <div className="flex items-start gap-3">
         <img src="/icons/icon-192.png" alt="" width="44" height="44" className="rounded-sm" />
         <div className="min-w-0 flex-1">
-          <p className="font-display text-lg text-bone">Install accountplug</p>
+          <p className="font-display text-lg text-bone">Install linksy</p>
           <p className="text-xs leading-relaxed text-muted">
             {ios
               ? 'tap Share, then "Add to Home Screen" for the app experience.'

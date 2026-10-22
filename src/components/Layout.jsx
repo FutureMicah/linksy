@@ -59,13 +59,14 @@ export default function Layout() {
       <div className="ambient" />
 
       <header ref={headerRef} className="sticky top-0 z-40 bg-ink/75 backdrop-blur-md border-b border-line">
+        <div className="grad-stream absolute inset-x-0 top-0 h-[2px]" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-3">
           <Link data-nav to="/" className="flex items-center gap-2 shrink-0">
             <span className="grid place-items-center w-8 h-8 bg-lime text-ink font-display text-sm shadow-[0_0_24px_rgba(217,185,122,0.55)]">
-              AP
+              LS
             </span>
             <span className="font-display text-xl md:text-2xl leading-none tracking-wide">
-              ACCOUNT<span className="text-lime">PLUG</span>
+              LINK<span className="text-lime">SY</span>
             </span>
           </Link>
 
@@ -123,10 +124,10 @@ export default function Layout() {
       </main>
 
       <footer className="relative mt-10 border-t border-line">
-        <div className="hairline absolute inset-x-0 -top-px" />
+        <div className="hairline grad-stream absolute inset-x-0 -top-px" />
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between text-xs text-muted">
           <span className="font-display text-sm text-bone/80 tracking-wider">
-            ACCOUNT<span className="text-lime">PLUG</span>. DIGITAL GOODS, DELIVERED AFTER PAYMENT.
+            LINK<span className="text-lime">SY</span>. DIGITAL GOODS, DELIVERED AFTER PAYMENT.
           </span>
           <span>Checkout is a manual bank transfer. Bank details are placeholders until you set them in your env.</span>
         </div>

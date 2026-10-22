@@ -1,3 +1,4 @@
+import PlatformBadge from './PlatformBadge.jsx'
 import { memo, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -66,6 +67,7 @@ function ProductCard({ listing }) {
         <Link to={`/product/${listing.id}`} className="block">
           <div className="tile-media relative h-40 md:h-48">
             <Cover listing={listing} className="h-full w-full" />
+            <span className="absolute bottom-2.5 left-2.5"><PlatformBadge listing={listing} /></span>
             {listing.featured && !soldOut && (
               <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
             )}

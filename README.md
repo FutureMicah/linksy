@@ -1,4 +1,4 @@
-# accountplug
+# linksy
 
 A dark, motion-heavy marketplace for gaming accounts, social media accounts and redeemable gift cards. Prices are in Naira (₦) with a USD equivalent. Checkout is a manual bank transfer followed by a WhatsApp proof link.
 

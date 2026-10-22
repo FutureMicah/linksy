@@ -118,6 +118,6 @@ export const useStore = create(
         })
       },
     }),
-    { name: 'accountplug-store-v1' },
+    { name: 'linksy-store-v1' },
   ),
 )

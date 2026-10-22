@@ -1,7 +1,7 @@
-/* accountplug service worker: offline app shell + cache for static assets.
+/* linksy service worker: offline app shell + cache for static assets.
    Listings and cart live in localStorage, so the shell is all that needs caching.
    Bump CACHE when the shell changes. */
-const CACHE = 'accountplug-v3';
+const CACHE = 'linksy-v3';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
