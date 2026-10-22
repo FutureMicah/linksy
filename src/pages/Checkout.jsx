@@ -109,6 +109,17 @@ export default function Checkout() {
           )}
         </section>
 
+        <div className="rounded-2xl border border-cyan/25 bg-cyan/5 p-4 text-sm flex gap-3">
+          <span aria-hidden="true" className="text-cyan text-lg leading-none">🔒</span>
+          <div>
+            <div className="font-medium">Your payment is held in escrow by Linksy</div>
+            <p className="text-muted text-xs mt-1 leading-relaxed">
+              The seller is paid only after you confirm delivery, or after the 24h inspection window closes with no dispute.
+              If something is wrong, open a dispute from your order page and funds stay on hold.
+            </p>
+          </div>
+        </div>
+
         {error && <div className="border border-danger text-danger p-3 text-sm">{error}</div>}
 
         <Magnetic className="w-full md:w-auto">

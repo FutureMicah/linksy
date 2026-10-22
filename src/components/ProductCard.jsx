@@ -5,6 +5,7 @@ import { useStore } from '../store/useStore.js'
 import { formatPrice, stockLabel } from '../lib/format.js'
 import { categoryById } from '../config.js'
 import Cover from './Cover.jsx'
+import VerifiedSeller from './VerifiedSeller.jsx'
 import { gsap, useGSAP, finePointer, reducedMotion } from '../lib/motion.js'
 
 const toneClass = {
@@ -80,8 +81,11 @@ function ProductCard({ listing }) {
           </div>
         </Link>
         <div className="p-3.5 md:p-4 flex-1 flex flex-col gap-2">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-muted font-display">
-            {cat?.short} · {listing.brand}
+          <div className="flex items-center justify-between gap-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-muted font-display truncate">
+              {cat?.short} · {listing.brand}
+            </div>
+            <VerifiedSeller compact />
           </div>
           <Link to={`/product/${listing.id}`} className="font-semibold leading-snug line-clamp-2 hover:text-lime transition-colors">
             {listing.title}

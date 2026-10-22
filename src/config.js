@@ -10,6 +10,10 @@ export const CONFIG = {
   },
   usdRate: Number(env.VITE_USD_RATE) || 1550,
   supportWhatsapp: env.VITE_SUPPORT_WHATSAPP || '2340000000000',
+  // Seller trust stats shown on the Verified Seller badge. Replace with real numbers before going live.
+  trust: { positive: '99.4%', orders: '140+' },
+  // Demo reviews from src/data/reviews.js. Turn off before taking real orders.
+  showSeedReviews: true,
 }
 
 export const CATEGORIES = [

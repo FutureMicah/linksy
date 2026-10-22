@@ -6,6 +6,11 @@ import { categoryById } from '../config.js'
 import ProductCard from '../components/ProductCard.jsx'
 import Cover from '../components/Cover.jsx'
 import Magnetic from '../components/Magnetic.jsx'
+import VerifiedSeller from '../components/VerifiedSeller.jsx'
+import ReviewList from '../components/ReviewList.jsx'
+import { SEED_REVIEWS } from '../data/reviews.js'
+import { reviewsForListing, averageRating } from '../lib/reviews.js'
+import { CONFIG } from '../config.js'
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { useReveal } from '../lib/motion.js'
 
@@ -18,6 +23,7 @@ export default function Product() {
   const listings = useStore((s) => s.listings)
   const currency = useStore((s) => s.currency)
   const addToCart = useStore((s) => s.addToCart)
+  const storedReviews = useStore((s) => s.reviews)
   const scope = useRef(null)
   useReveal(scope, [id])
 
@@ -47,6 +53,8 @@ export default function Product() {
     .filter((l) => l.category === listing.category && l.id !== listing.id && l.status === 'active' && l.stock > 0)
     .slice(0, 4)
 
+  const reviews = listing ? reviewsForListing(listing.id, SEED_REVIEWS, storedReviews, CONFIG.showSeedReviews) : []
+
   const buyNow = () => {
     if (addToCart(listing.id)) navigate('/checkout')
   }
@@ -71,6 +79,13 @@ export default function Product() {
           <div data-pdetail>
             <p className="font-display text-xs text-amber tracking-[0.25em]">{listing.brand.toUpperCase()}</p>
             <h1 className="font-display text-3xl md:text-5xl leading-[0.95] mt-2">{listing.title}</h1>
+          </div>
+
+          <div data-pdetail className="flex flex-wrap items-center gap-2">
+            <VerifiedSeller />
+            {reviews.length > 0 && (
+              <span className="text-xs text-muted">★ {averageRating(reviews).toFixed(1)} · {reviews.length} review{reviews.length > 1 ? 's' : ''}</span>
+            )}
           </div>
 
           <div data-pdetail className="flex items-end gap-4 flex-wrap">
@@ -109,6 +124,11 @@ export default function Product() {
             </div>
           ))}
         </dl>
+      </section>
+
+      <section data-reveal className="card p-5 md:p-7">
+        <h2 className="font-display text-xl mb-4">BUYER REVIEWS</h2>
+        <ReviewList reviews={reviews} />
       </section>
 
       {related.length > 0 && (

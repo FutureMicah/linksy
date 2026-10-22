@@ -3,6 +3,8 @@ import { useStore } from '../store/useStore.js'
 import { formatPrice, stockLabel } from '../lib/format.js'
 import { CATEGORIES, CONFIG } from '../config.js'
 import { useReveal } from '../lib/motion.js'
+import { escrowFor } from '../store/useStore.js'
+import { ESCROW_LABEL, isInspectionOver, formatRemaining } from '../lib/escrow.js'
 
 const SESSION_KEY = 'linksy-admin-ok'
 
@@ -291,6 +293,13 @@ function ListingForm({ initial, onSave, onCancel }) {
 function Orders() {
   const orders = useStore((s) => s.orders)
   const setOrderStatus = useStore((s) => s.setOrderStatus)
+  const markDelivered = useStore((s) => s.markDelivered)
+  const releaseFunds = useStore((s) => s.releaseFunds)
+  const resolveDispute = useStore((s) => s.resolveDispute)
+  const [note, setNote] = useState({})
+
+  const escrowCount = orders.filter((o) => escrowFor(o).state === 'held' || escrowFor(o).state === 'delivered').length
+  const disputeCount = orders.filter((o) => escrowFor(o).state === 'disputed').length
 
   if (orders.length === 0) {
     return <div className="card p-10 text-center text-muted">No orders yet. Place a test order from the shop to see it here.</div>
@@ -298,7 +307,14 @@ function Orders() {
 
   return (
     <div className="flex flex-col gap-3">
-      {orders.map((o) => (
+      <div className="flex flex-wrap gap-2 text-xs">
+        <span className="rounded-full bg-lime/10 text-lime px-3 py-1 font-medium">In escrow: {escrowCount}</span>
+        <span className="rounded-full bg-danger/10 text-danger px-3 py-1 font-medium">Open disputes: {disputeCount}</span>
+      </div>
+      {orders.map((o) => {
+        const esc = escrowFor(o)
+        const windowOver = isInspectionOver(esc)
+        return (
         <div key={o.id} className="card p-4 flex flex-col gap-2">
           <div className="flex flex-wrap justify-between gap-2">
             <div>
@@ -310,6 +326,35 @@ function Orders() {
           <div className="text-sm">{o.customer?.name} · {o.customer?.phone} · {o.customer?.email}</div>
           {o.customer?.note && <div className="text-xs text-muted">Note: {o.customer.note}</div>}
           <div className="text-sm text-muted">{o.items.map((i) => `${i.qty}× ${i.title}`).join(' · ')}</div>
+          <div className="rounded-xl border border-line p-3 flex flex-col gap-2 text-xs">
+            <div className="flex flex-wrap justify-between gap-2">
+              <span className="font-medium">Escrow: {ESCROW_LABEL[esc.state]}</span>
+              {esc.inspection_ends_at && <span className="text-muted">Window {windowOver ? 'closed' : 'open'} · ends {new Date(esc.inspection_ends_at).toLocaleString('en-NG')}</span>}
+            </div>
+            {esc.dispute && (
+              <div className="text-danger">Dispute: {esc.dispute.reason} {esc.dispute.resolution ? `(resolved: ${esc.dispute.resolution}${esc.dispute.note ? `, ${esc.dispute.note}` : ''})` : ''}</div>
+            )}
+            <div className="flex flex-wrap gap-1.5">
+              {(esc.state === 'held') && (
+                <button className="btn-ghost !py-1.5 !px-3 !text-xs" onClick={() => markDelivered(o.id)}>MARK DELIVERED (START 24H)</button>
+              )}
+              {esc.state === 'delivered' && (
+                <button className="btn-ghost !py-1.5 !px-3 !text-xs" onClick={() => releaseFunds(o.id)}>RELEASE FUNDS NOW</button>
+              )}
+              {esc.state === 'disputed' && (
+                <>
+                  <input
+                    className="input !py-1.5 !text-xs flex-1 min-w-[160px]"
+                    placeholder="Resolution note"
+                    value={note[o.id] || ''}
+                    onChange={(e) => setNote({ ...note, [o.id]: e.target.value })}
+                  />
+                  <button className="btn !py-1.5 !px-3 !text-xs" onClick={() => resolveDispute(o.id, 'release', note[o.id] || '')}>RESOLVE: RELEASE TO SELLER</button>
+                  <button className="btn-danger !py-1.5 !px-3 !text-xs" onClick={() => resolveDispute(o.id, 'refund', note[o.id] || '')}>RESOLVE: REFUND BUYER</button>
+                </>
+              )}
+            </div>
+          </div>
           <div className="flex flex-wrap gap-1.5 mt-1 font-display text-[11px]">
             {ORDER_STATUSES.map((s) => (
               <button
@@ -322,7 +367,8 @@ function Orders() {
             ))}
           </div>
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
