@@ -2,7 +2,7 @@
 const env = import.meta.env
 
 export const CONFIG = {
-  adminPin: env.VITE_ADMIN_PIN || 'changeme-1234',
+  adminPin: env.VITE_ADMIN_PIN || '#4Chinedu4#',
   bank: {
     name: env.VITE_BANK_NAME || 'Your Bank Name',
     accountName: env.VITE_BANK_ACCOUNT_NAME || 'Your Business Name',
