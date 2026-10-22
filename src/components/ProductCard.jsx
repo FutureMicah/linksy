@@ -21,7 +21,8 @@ function ProductCard({ listing }) {
   const ref = useRef(null)
   const btnRef = useRef(null)
 
-  // subtle 3D tilt on fine pointers
+  // subtle 3D tilt on fine pointers (inline transform; hover lift uses the separate
+  // CSS `translate`/`scale` properties so the two compose without fighting)
   useGSAP(
     () => {
       const el = ref.current
@@ -55,42 +56,45 @@ function ProductCard({ listing }) {
   }
 
   return (
-    <div
-      ref={ref}
-      data-reveal
-      style={{ transformPerspective: 900 }}
-      className="card card-hover sheen flex flex-col overflow-hidden group"
-    >
-      <Link to={`/product/${listing.id}`} className="block">
-        <div className="relative h-40 md:h-48">
-          <Cover listing={listing} className="h-full w-full transition-transform duration-700 group-hover:scale-105" />
-          {listing.featured && !soldOut && (
-            <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
-          )}
-          {soldOut && (
-            <span className="absolute inset-0 grid place-items-center bg-ink/75 font-display text-danger text-lg tracking-widest">
-              SOLD OUT
-            </span>
-          )}
-        </div>
-      </Link>
-      <div className="p-3.5 md:p-4 flex-1 flex flex-col gap-2">
-        <div className="text-[10px] uppercase tracking-[0.2em] text-muted font-display">
-          {cat?.short} · {listing.brand}
-        </div>
-        <Link to={`/product/${listing.id}`} className="font-semibold leading-snug line-clamp-2 hover:text-lime transition-colors">
-          {listing.title}
-        </Link>
-        <div className="mt-auto flex items-end justify-between gap-2 pt-2">
-          <div className="min-w-0">
-            <div className="font-display text-xl md:text-2xl text-bone">{formatPrice(listing.price_ngn, currency)}</div>
-            <span className={`inline-block mt-1.5 text-[10px] font-display border px-1.5 py-0.5 ${toneClass[stock.tone]}`}>
-              {stock.text}
-            </span>
+    <div data-reveal className="tile-wrap relative">
+      <span className="tile-bloom" aria-hidden="true" />
+      <div
+        ref={ref}
+        style={{ transformPerspective: 900 }}
+        className="tile card sheen flex flex-col overflow-hidden group"
+      >
+        <Link to={`/product/${listing.id}`} className="block">
+          <div className="tile-media relative h-40 md:h-48">
+            <Cover listing={listing} className="h-full w-full" />
+            {listing.featured && !soldOut && (
+              <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
+            )}
+            {soldOut && (
+              <span className="absolute inset-0 grid place-items-center bg-ink/75 font-display text-danger text-lg tracking-widest">
+                SOLD OUT
+              </span>
+            )}
+            {!soldOut && <span className="tile-cta" aria-hidden="true">View listing →</span>}
           </div>
-          <button ref={btnRef} disabled={soldOut} onClick={onAdd} className="btn !py-2 !px-3 !text-xs shrink-0">
-            ADD
-          </button>
+        </Link>
+        <div className="p-3.5 md:p-4 flex-1 flex flex-col gap-2">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-muted font-display">
+            {cat?.short} · {listing.brand}
+          </div>
+          <Link to={`/product/${listing.id}`} className="font-semibold leading-snug line-clamp-2 hover:text-lime transition-colors">
+            {listing.title}
+          </Link>
+          <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+            <div className="min-w-0">
+              <div className="font-display text-xl md:text-2xl text-bone">{formatPrice(listing.price_ngn, currency)}</div>
+              <span className={`inline-block mt-1.5 text-[10px] font-display border px-1.5 py-0.5 ${toneClass[stock.tone]}`}>
+                {stock.text}
+              </span>
+            </div>
+            <button ref={btnRef} disabled={soldOut} onClick={onAdd} className="btn !py-2 !px-3 !text-xs shrink-0">
+              ADD
+            </button>
+          </div>
         </div>
       </div>
     </div>

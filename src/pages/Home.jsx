@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard.jsx'
 import Cover from '../components/Cover.jsx'
 import Hero from '../components/Hero.jsx'
 import Marquee from '../components/Marquee.jsx'
+import FeaturedCarousel from '../components/FeaturedCarousel.jsx'
 import { CATEGORIES, categoryById } from '../config.js'
 import { useReveal } from '../lib/motion.js'
 
@@ -65,14 +66,17 @@ export default function Home() {
       {!activeCat && (
         <>
           <Hero stats={stats} />
+          <section data-reveal>
+            <FeaturedCarousel />
+          </section>
           <Marquee items={['Gaming accounts', 'Social accounts', 'Gift cards', 'Naira pricing', 'Bank transfer', 'Delivered in chat']} />
 
-          <section data-reveal className="grid md:grid-cols-3 gap-3 md:gap-4">
+          <section data-reveal className="snap-row md:grid md:grid-cols-3 md:overflow-visible md:snap-none md:gap-4" aria-label="Categories">
             {CATEGORIES.map((c) => (
               <Link
                 key={c.id}
                 to={`/category/${c.id}`}
-                className="card card-hover group p-5 md:p-6 flex items-center justify-between overflow-hidden"
+                className="card card-hover group snap-start w-[78vw] max-w-[360px] md:w-auto md:max-w-none p-5 md:p-6 flex items-center justify-between overflow-hidden"
               >
                 <div>
                   <div className="font-display text-2xl md:text-3xl">{c.label}</div>
