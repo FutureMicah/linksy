@@ -63,7 +63,8 @@
     <script>
       // failsafe: never white-screen. the splash only ever leaves via main.jsx once the app is ready.
       // after 12s with no ready signal, show a tap-to-retry state instead of hiding the splash.
-      setTimeout(function(){var s=document.getElementById('splash');if(s){s.classList.add('is-stuck');var b=s.querySelector('.sp-retry');if(b)b.onclick=function(){location.reload()}}},12000);
+      // the retry state only shows if React never mounted at all (a real error). a mounted app reveals itself in main.jsx.
+      setTimeout(function(){var r=document.getElementById('root');if(r&&r.childElementCount>0)return;var s=document.getElementById('splash');if(s){s.classList.add('is-stuck');var b=s.querySelector('.sp-retry');if(b)b.onclick=function(){location.reload()}}},12000);
     </script>
   </head>
   <body>

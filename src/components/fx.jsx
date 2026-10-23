@@ -274,7 +274,9 @@ export function useScrollReactive(rootRef, key) {
   useEffect(() => {
     const root = rootRef.current
     if (!root || reducedMotion()) return undefined
+    const rm = false // reduced motion already returned above
     let raf = 0
+    let items = [] // [data-drift],[data-head] nodes, rescanned on DOM mutation
     let lastY = window.scrollY
     let lastT = performance.now()
     let vel = 0 // smoothed px/ms
