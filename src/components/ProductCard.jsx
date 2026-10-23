@@ -114,6 +114,9 @@ function ProductCard({ listing }) {
             {listing.featured && !soldOut && (
               <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
             )}
+            {listing.featured && !soldOut && (
+              <span className="festive-ribbon" aria-hidden="true">Festive Deal</span>
+            )}
             {soldOut && (
               <span className="absolute inset-0 grid place-items-center bg-ink/75 font-display text-danger text-lg tracking-widest">
                 SOLD OUT
@@ -139,7 +142,7 @@ function ProductCard({ listing }) {
                 {stock.text}
               </span>
             </div>
-            <button ref={btnRef} disabled={soldOut} onClick={onAdd} className="btn !py-2 !px-3 !text-xs shrink-0">
+            <button ref={btnRef} disabled={soldOut} onClick={onAdd} className="btn gold-pulse !py-2 !px-3 !text-xs shrink-0">
               ADD
             </button>
           </div>

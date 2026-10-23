@@ -7,6 +7,7 @@ import Magnetic from './Magnetic.jsx'
 import { ScrollProgress, CursorGlow, useRipple, useScrollFx } from './fx.jsx'
 import Aurora from './Aurora.jsx'
 import Spider from './Spider.jsx'
+import Countdown from './Countdown.jsx'
 
 const linkCls = ({ isActive }) =>
   `relative transition-colors ${isActive ? 'text-lime' : 'text-muted hover:text-bone'}`
@@ -155,6 +156,8 @@ export default function Layout() {
           </div>
         </div>
       </header>
+
+      <Countdown />
 
       <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
         <Suspense fallback={<div className="min-h-[50vh]" />}>

@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.jsx'
 import './index.css'
 import './styles/fx3d.css'
+import './styles/holiday.css'
 import { registerSW } from './lib/pwa.js'
 
 registerSW()

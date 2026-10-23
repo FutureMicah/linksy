@@ -102,7 +102,7 @@ export default function Product() {
 
           <div data-pdetail className="flex flex-col sm:flex-row gap-3">
             <Magnetic className="flex-1">
-              <button disabled={soldOut} onClick={() => addToCart(listing.id)} className="btn w-full">ADD TO CART</button>
+              <button disabled={soldOut} onClick={() => addToCart(listing.id)} className="btn gold-pulse w-full">ADD TO CART</button>
             </Magnetic>
             <Magnetic className="flex-1">
               <button disabled={soldOut} onClick={buyNow} className="btn-ghost w-full">BUY NOW</button>

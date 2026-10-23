@@ -7,6 +7,18 @@ import Cover from './Cover.jsx'
 
 const ORB_SPEED = [0.3, 0.55, 0.18]
 
+// 8 gold sparkles, fixed positions so the hero is identical on every render
+const SPARKLES = [
+  { '--sx': '12%', '--sy': '18%', '--ss': '5px', '--dx': '12px', '--dy': '-20px', '--sd': '9s', '--st': '2.4s', '--sdl': '0s' },
+  { '--sx': '34%', '--sy': '66%', '--ss': '4px', '--dx': '-10px', '--dy': '-24px', '--sd': '11s', '--st': '3.1s', '--sdl': '-3s' },
+  { '--sx': '58%', '--sy': '12%', '--ss': '6px', '--dx': '16px', '--dy': '-18px', '--sd': '8s', '--st': '2.8s', '--sdl': '-1.5s' },
+  { '--sx': '76%', '--sy': '46%', '--ss': '4px', '--dx': '-14px', '--dy': '-26px', '--sd': '12s', '--st': '3.4s', '--sdl': '-6s' },
+  { '--sx': '88%', '--sy': '80%', '--ss': '5px', '--dx': '10px', '--dy': '-16px', '--sd': '9.5s', '--st': '2.2s', '--sdl': '-4s' },
+  { '--sx': '46%', '--sy': '86%', '--ss': '3px', '--dx': '-8px', '--dy': '-22px', '--sd': '10s', '--st': '2.9s', '--sdl': '-2s' },
+  { '--sx': '22%', '--sy': '40%', '--ss': '4px', '--dx': '18px', '--dy': '-28px', '--sd': '13s', '--st': '3.6s', '--sdl': '-7s' },
+  { '--sx': '66%', '--sy': '28%', '--ss': '3px', '--dx': '-12px', '--dy': '-20px', '--sd': '9s', '--st': '2.6s', '--sdl': '-5s' },
+]
+
 // the glass panel rises in 3D only on the first mount of this page load (not on every category visit)
 let heroSeen = false
 
@@ -70,6 +82,11 @@ export default function Hero({ stats }) {
     <section ref={ref} onPointerMove={onMove} className={`relative overflow-hidden border border-line bg-panel/40 md:rounded-sm ${enter ? 'hero-enter' : ''}`}>
       <div className="spot pointer-events-none absolute inset-0" />
       <div className="light-leak" aria-hidden="true" />
+      <div className="sparkle-field" aria-hidden="true">
+        {SPARKLES.map((s, i) => (
+          <span key={i} className="sparkle" style={s} />
+        ))}
+      </div>
       <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-lime/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-cyan/10 blur-3xl pointer-events-none" />
 
@@ -79,9 +96,9 @@ export default function Hero({ stats }) {
             DIGITAL GOODS / INSTANT HANDOVER
           </p>
           <h1 className="font-display uppercase leading-[0.88] text-[clamp(3.2rem,14vw,7.5rem)]">
-            <span className="block overflow-hidden pb-1"><span data-hero-line className="block">Gaming</span></span>
-            <span className="block overflow-hidden pb-1"><span data-hero-line className="block">accounts.</span></span>
-            <span className="block overflow-hidden pb-1"><span data-hero-line className="block grad-text">Gift cards.</span></span>
+            <span className="block overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gaming</span></span>
+            <span className="block overflow-hidden pb-1"><span data-hero-line className="block foil-text">accounts.</span></span>
+            <span className="block overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gift cards.</span></span>
           </h1>
           <p data-hero-fade className="text-muted max-w-md text-[15px] leading-relaxed">
             Socials and gift cards too. Pay the exact amount by bank transfer in naira, then get your delivery in the chat once we confirm.
