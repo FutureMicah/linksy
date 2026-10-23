@@ -1,14 +1,18 @@
 import { useEffect, useRef } from 'react'
+import { reducedMotion, finePointer } from '../lib/motion.js'
 
 // Interactive screen spider: a fixed, pointer-transparent overlay.
-// Crawls the viewport edges, scurries and clings while scrolling fast,
-// darts away from pointer/touch, and drops on a silk thread when idle.
-// Motion is transform + SVG path updates inside one requestAnimationFrame loop.
+// Crawls the viewport edges, scurries faster while you scroll, pauses when idle,
+// startles (leg-splay hop + dust puff) when touched or poked, lazily keeps a distance
+// from the desktop cursor, does an occasional idle spin/dance, and trails a faint silk line.
+// Transform + SVG path updates inside one requestAnimationFrame loop. Silent.
+// Under prefers-reduced-motion it renders once, static, and never animates.
 
 const L1 = 12 // upper leg segment (local units)
 const L2 = 14 // lower leg segment
 const REACH = 22 // rest foot distance from hip
 const TOP_MIN = 96 // keep clear of the sticky header
+const TRAIL_N = 28 // silk trail samples
 const HIP_X = [6, 2, -3, -8]
 const HIP_Y = [4, 6, 6, 4]
 const THETA = [48, 82, 112, 142] // leg angles from the body's forward axis, degrees
@@ -30,7 +34,6 @@ for (const s of [1, -1]) {
       group: (j + (s === 1 ? 0 : 1)) % 2,
       step: null,
       foot: null,
-      el: null,
     })
   }
 }
@@ -52,6 +55,8 @@ export default function Spider() {
   const bodyRef = useRef(null)
   const threadSvgRef = useRef(null)
   const threadRef = useRef(null)
+  const silkRef = useRef(null)
+  const dustRef = useRef(null)
   const legEls = useRef([])
 
   useEffect(() => {
@@ -59,7 +64,12 @@ export default function Spider() {
     const body = bodyRef.current
     const threadSvg = threadSvgRef.current
     const thread = threadRef.current
-    if (!wrap || !body || !thread) return undefined
+    const silk = silkRef.current
+    const dust = dustRef.current
+    if (!wrap || !body || !thread || !silk || !dust) return undefined
+
+    const rm = reducedMotion()
+    const fine = finePointer()
 
     let W = window.innerWidth
     let H = window.innerHeight
@@ -89,13 +99,21 @@ export default function Spider() {
       startY: 0,
       dropY: 0,
       edgeH: 0,
-      dartTx: 0,
-      dartTy: 0,
       lastY: window.scrollY,
+      sp: 0, // smoothed scroll speed, px/s
       fastAt: -1e9,
       lastPoke: -1e9,
-      pointerX: null,
-      pointerY: null,
+      splay: 0, // seconds of leg-splay left after a startle
+      hopT: -1, // seconds into the startle hop, -1 when idle
+      dustT: -1, // seconds into the dust puff, -1 when idle
+      dustX: 0,
+      dustY: 0,
+      mx: 0, // last known pointer position (fine pointers only)
+      my: 0,
+      mt: -1e9,
+      lastFollow: -1e9,
+      threadOn: false,
+      trail: [],
       pendingLower: false,
     }
 
@@ -200,12 +218,54 @@ export default function Spider() {
       }
     }
 
-    // direct poses (cling spread, thread curl)
+    // direct poses (cling spread, thread curl, startle splay, idle dance)
     const poseLegs = (fn) => {
       LEGS.forEach((l, i) => {
         l.step = null
         l.foot = fn(l, i)
       })
+    }
+
+    // one render pass: wrapper transform, body rotation, leg paths, thread, silk trail, dust puff
+    const draw = (now) => {
+      const hop = st.hopT >= 0 ? Math.sin(Math.PI * clamp(st.hopT / 0.45, 0, 1)) * 12 * S : 0
+      const bob = st.threadOn || st.mode === 'spin' || rm ? 0 : Math.sin(now / 400) * 0.6
+      wrap.style.transform = `translate3d(${(st.x - 40 * S).toFixed(1)}px, ${(st.y - 40 * S - hop + bob).toFixed(1)}px, 0)`
+      body.setAttribute('transform', `rotate(${((st.h * 180) / Math.PI).toFixed(1)})`)
+      LEGS.forEach((l, i) => {
+        const el = legEls.current[i]
+        if (!el || !l.foot) return
+        const fl = toLocal(l.foot.x, l.foot.y)
+        const lift = l.step ? Math.sin(Math.PI * l.step.t) * 0.35 : 0
+        const k = knee(l.hip, fl, l.s, lift)
+        el.setAttribute('d', `M${l.hip[0]} ${l.hip[1]}L${k[0].toFixed(2)} ${k[1].toFixed(2)}L${fl.x.toFixed(2)} ${fl.y.toFixed(2)}`)
+      })
+      if (st.threadOn) {
+        thread.setAttribute('opacity', '1')
+        thread.setAttribute('x1', st.anchorX)
+        thread.setAttribute('y1', 0)
+        thread.setAttribute('x2', st.x)
+        thread.setAttribute('y2', st.y - 7 * S)
+      } else {
+        thread.setAttribute('opacity', '0')
+      }
+      if (st.trail.length > 1) {
+        silk.setAttribute('d', st.trail.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(''))
+      }
+      if (st.dustT >= 0) {
+        const p = clamp(st.dustT / 0.5, 0, 1)
+        dust.style.opacity = (0.5 * (1 - p)).toFixed(3)
+        dust.style.transform = `translate3d(${(st.dustX - 20 * S).toFixed(1)}px, ${(st.dustY - 20 * S).toFixed(1)}px, 0) scale(${(0.5 + p * 1.4).toFixed(3)})`
+      } else {
+        dust.style.opacity = '0'
+      }
+    }
+
+    // reduced motion: one static pose, no loop, no listeners
+    if (rm) {
+      poseLegs((l) => toWorld(l.hip[0] + l.dir[0] * REACH, l.hip[1] + l.dir[1] * REACH))
+      draw(0)
+      return undefined
     }
 
     let raf = 0
@@ -216,22 +276,41 @@ export default function Spider() {
       last = now
       st.t += dt
 
-      // scroll: fast scrolling sends the spider to the nearest edge
+      // scroll: speed feeds the gait; fast scrolling sends the spider to the nearest edge
       const sy = window.scrollY
       const dy = Math.abs(sy - st.lastY)
       st.lastY = sy
+      st.sp = st.sp * 0.85 + (dy / Math.max(dt, 0.001)) * 0.15
       if (dy > 28) st.fastAt = now
       const scrollFast = now - st.fastAt < 120
       const scrollIdle = now - st.fastAt > 900
+      const boost = 1 + clamp(st.sp / 900, 0, 1.4) // scurry faster while scrolling
 
       if (scrollFast && st.mode !== 'scurry' && st.mode !== 'cling' && st.mode !== 'dart') {
         nearestEdge()
         enter('scurry')
       }
 
+      // startle timers
+      if (st.splay > 0) st.splay -= dt
+      if (st.hopT >= 0) { st.hopT += dt; if (st.hopT > 0.45) st.hopT = -1 }
+      if (st.dustT >= 0) { st.dustT += dt; if (st.dustT > 0.5) st.dustT = -1 }
+
+      // lazy cursor follow (desktop): drift toward a spot about 170px from the pointer, never closer than 240px
+      if (fine && (st.mode === 'pause' || st.mode === 'wander') && !scrollFast && now - st.mt < 3000 && now - st.lastFollow > 2600) {
+        const dC = Math.hypot(st.mx - st.x, st.my - st.y)
+        if (dC > 240 * S) {
+          const ang = Math.atan2(st.y - st.my, st.x - st.mx)
+          st.tx = clamp(st.mx + Math.cos(ang) * 170 * S, 16, W - 16)
+          st.ty = clamp(st.my + Math.sin(ang) * 170 * S, TOP_MIN, H - 16)
+          st.lastFollow = now
+          enter('wander')
+        }
+      }
+
       switch (st.mode) {
         case 'wander': {
-          if (moveToward(dt, 26, 4)) {
+          if (moveToward(dt, 26 * boost, 4)) {
             if (Math.random() < 0.2) {
               st.pendingLower = true
               enter('pause', rand(0.6, 1.4))
@@ -249,14 +328,25 @@ export default function Spider() {
               st.startY = st.y
               st.dropY = Math.min(H - 30, st.y + rand(70, 150))
               enter('lower', 0.9)
+            } else if (Math.random() < 0.18) {
+              enter('spin', rand(0.9, 1.3)) // idle spin / dance
+              st.spinH0 = st.h
             } else {
               pickWander()
             }
           }
           break
         }
+        case 'spin': {
+          st.h += (dt * Math.PI * 2) / st.dur
+          if (st.t >= st.dur) {
+            st.h = st.spinH0
+            enter('pause', rand(0.8, 1.8))
+          }
+          break
+        }
         case 'scurry': {
-          if (moveToward(dt, 270, 10)) {
+          if (moveToward(dt, 270 * boost, 10)) {
             st.h = st.edgeH
             enter('cling')
           }
@@ -310,66 +400,70 @@ export default function Spider() {
       }
 
       bounds()
+      st.threadOn = st.mode === 'lower' || st.mode === 'hang' || st.mode === 'climb'
 
-      const threadOn = st.mode === 'lower' || st.mode === 'hang' || st.mode === 'climb'
+      // legs
       if (st.mode === 'cling') {
         poseLegs((l, i) => toWorld(l.hip[0] + l.dir[0] * REACH * 1.2, l.hip[1] + l.dir[1] * REACH * 1.2 + Math.sin(now / 180 + i) * 0.6))
-      } else if (threadOn) {
+      } else if (st.threadOn) {
         poseLegs((l, i) => {
           const wig = Math.sin(now / 140 + i * 0.9) * 1.6
           return toWorld(l.hip[0] + l.dir[0] * 11, l.hip[1] + l.dir[1] * 11 + wig * l.s)
         })
+      } else if (st.mode === 'spin') {
+        poseLegs((l, i) => toWorld(l.hip[0] + l.dir[0] * REACH * 1.1, l.hip[1] + l.dir[1] * REACH * 1.1 + Math.sin(now / 90 + i * 0.8) * 3))
+      } else if (st.splay > 0) {
+        // startle: legs fan out wide
+        poseLegs((l, i) => toWorld(l.hip[0] + l.dir[0] * REACH * 1.9, l.hip[1] + l.dir[1] * REACH * 1.9 + Math.sin(now / 60 + i) * 0.8))
       } else {
-        const idleSpeed = st.mode === 'pause' ? 0 : 1
-        stepLegs(dt, idleSpeed ? 10 : 12, st.mode === 'dart' ? 0.09 : 0.14, 2)
+        const idle = st.mode === 'pause'
+        stepLegs(dt, idle ? 12 : 10, (st.mode === 'dart' ? 0.09 : 0.14) / boost, 2)
       }
 
-      // render: transform on wrapper, rotation on body, leg path updates
-      wrap.style.transform = `translate3d(${(st.x - 40 * S).toFixed(1)}px, ${(st.y - 40 * S + (threadOn ? 0 : Math.sin(now / 400) * 0.6)).toFixed(1)}px, 0)`
-      body.setAttribute('transform', `rotate(${((st.h * 180) / Math.PI).toFixed(1)})`)
-      LEGS.forEach((l, i) => {
-        const el = legEls.current[i]
-        if (!el) return
-        const fl = toLocal(l.foot.x, l.foot.y)
-        const lift = l.step ? Math.sin(Math.PI * l.step.t) * 0.35 : 0
-        const k = knee(l.hip, fl, l.s, lift)
-        el.setAttribute('d', `M${l.hip[0]} ${l.hip[1]}L${k[0].toFixed(2)} ${k[1].toFixed(2)}L${fl.x.toFixed(2)} ${fl.y.toFixed(2)}`)
-      })
-      if (threadOn) {
-        threadSvg.style.opacity = '1'
-        thread.setAttribute('x1', st.anchorX)
-        thread.setAttribute('y1', 0)
-        thread.setAttribute('x2', st.x)
-        thread.setAttribute('y2', st.y - 7 * S)
-      } else {
-        threadSvg.style.opacity = '0'
+      // faint silk trail behind the body
+      const lp = st.trail[st.trail.length - 1]
+      if (!lp || Math.hypot(lp.x - st.x, lp.y - st.y) > 1.5) {
+        if (lp && Math.hypot(lp.x - st.x, lp.y - st.y) > 200 * S) st.trail.length = 0
+        st.trail.push({ x: st.x, y: st.y })
+        if (st.trail.length > TRAIL_N) st.trail.shift()
       }
 
+      draw(now)
       raf = requestAnimationFrame(frame)
     }
 
-    // startle: pointer or touch near the spider
+    // startle: a poke or touch near the spider makes it hop back with legs splayed and a puff of dust
     const poke = (px, py) => {
       const now = performance.now()
       if (now - st.lastPoke < 1400) return
       if (st.mode === 'dart') return
       if (Math.hypot(px - st.x, py - st.y) > 58 * S) return
       st.lastPoke = now
+      st.splay = 0.35
+      st.hopT = 0
+      st.dustT = 0
+      st.dustX = st.x
+      st.dustY = st.y
       let dx = st.x - px
       let dy = st.y - py
       const d = Math.hypot(dx, dy) || 1
       dx /= d
       dy /= d
-      st.dartTx = clamp(st.x + dx * 170 * S, 16, W - 16)
-      st.dartTy = clamp(st.y + dy * 170 * S, TOP_MIN, H - 16)
-      st.tx = st.dartTx
-      st.ty = st.dartTy
+      st.tx = clamp(st.x + dx * 170 * S, 16, W - 16)
+      st.ty = clamp(st.y + dy * 170 * S, TOP_MIN, H - 16)
       st.pendingLower = false
       enter('dart')
     }
 
     const onPointerDown = (e) => poke(e.clientX, e.clientY)
-    const onPointerMove = (e) => poke(e.clientX, e.clientY)
+    const onPointerMove = (e) => {
+      if (e.pointerType === 'mouse') {
+        st.mx = e.clientX
+        st.my = e.clientY
+        st.mt = performance.now()
+      }
+      poke(e.clientX, e.clientY)
+    }
     const onResize = () => sizeAll()
 
     window.addEventListener('pointerdown', onPointerDown, { passive: true })
@@ -397,10 +491,26 @@ export default function Spider() {
         ref={threadSvgRef}
         width="100%"
         height="100%"
-        style={{ position: 'absolute', inset: 0, opacity: 0 }}
+        style={{ position: 'absolute', inset: 0 }}
       >
-        <line ref={threadRef} stroke="rgba(30,41,59,0.5)" strokeWidth="1" />
+        <path ref={silkRef} fill="none" stroke="rgba(30,41,59,0.14)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+        <line ref={threadRef} stroke="rgba(30,41,59,0.5)" strokeWidth="1" opacity="0" />
       </svg>
+
+      <div
+        ref={dustRef}
+        style={{
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          width: 40,
+          height: 40,
+          opacity: 0,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(203,213,225,0.9) 0%, rgba(203,213,225,0) 70%)',
+          willChange: 'transform, opacity',
+        }}
+      />
 
       <div
         ref={wrapRef}

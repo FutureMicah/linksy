@@ -4,7 +4,7 @@ import { useStore } from '../store/useStore.js'
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { getLenis } from '../lib/lenis.js'
 import Magnetic from './Magnetic.jsx'
-import { ScrollProgress, CursorGlow, useRipple, useScrollFx } from './fx.jsx'
+import { ScrollProgress, CursorGlow, useRipple, useScrollFx, useScrollReactive } from './fx.jsx'
 import Aurora from './Aurora.jsx'
 import Spider from './Spider.jsx'
 import Countdown from './Countdown.jsx'
@@ -41,6 +41,7 @@ export default function Layout() {
   const mainRef = useRef(null)
   useRipple()
   useScrollFx(mainRef, pathname)
+  useScrollReactive(mainRef, pathname)
   const headerRef = useRef(null)
   const badgeRef = useRef(null)
   const cartRef = useRef(null)

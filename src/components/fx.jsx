@@ -283,3 +283,106 @@ export function useHorizontalPin(sectionRef, trackRef) {
     { scope: sectionRef },
   )
 }
+
+// Scroll-reactive layer (one rAF loop, transform only):
+// - .aurora drifts with scroll speed (translate3d on the container, blobs keep their own CSS drift)
+// - .tile-wrap nudges sideways a few px toward the scroll direction (uses the `translate` property, so hover/tilt transforms are untouched)
+// - [data-cparallax] images counter-move against their card as it crosses the viewport
+// - [data-wstagger] headers get a word-by-word rise on enter (IntersectionObserver)
+// Respects reduced motion (static: nothing runs).
+export function useScrollReactive(rootRef, key) {
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root || reducedMotion()) return undefined
+    let raf = 0
+    let lastY = window.scrollY
+    let lastT = performance.now()
+    let vel = 0 // smoothed px/ms
+    let dir = 0 // -1 up, 1 down
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('wstag-in')
+            io.unobserve(e.target)
+          }
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0.2 },
+    )
+
+    const update = () => {
+      raf = 0
+      if (rm) return
+      const vh = window.innerHeight
+      for (const el of items) {
+        const r = el.getBoundingClientRect()
+        if (r.bottom < -vh * 0.3 || r.top > vh * 1.3) continue
+        const cur = el._y || 0
+        const top = r.top - cur
+        const c = (top + r.height / 2 - vh / 2) / vh
+        if (el.hasAttribute('data-drift')) {
+          el._y = -c * Number(el.dataset.drift) * 100
+          el.style.transform = `translate3d(0,${el._y.toFixed(1)}px,0)`
+        }
+        if (el.hasAttribute('data-head')) {
+          const a = Math.min(1, Math.abs(c))
+          el.style.opacity = (1 - a * 0.5).toFixed(3)
+          el.style.transform = `scale(${(1 - a * 0.05).toFixed(3)})`
+        }
+      }
+    }
+
+    const onScroll = () => {
+      if (!raf && !rm) raf = requestAnimationFrame(update)
+    }
+
+    const scan = () => {
+      root.querySelectorAll('[data-io]:not([data-io-on])').forEach((el) => {
+        el.dataset.ioOn = '1'
+        const st = Number(el.dataset.ioStagger || 0)
+        if (st && el.parentElement) {
+          // cap the index so long grids never make the last cards wait more than IO_STAGGER_CAP * st ms
+          const i = Math.min(Array.prototype.indexOf.call(el.parentElement.children, el), IO_STAGGER_CAP)
+          el.style.setProperty('--io-d', `${i * st}ms`)
+        }
+        if (rm) el.classList.add('io-in')
+        else io.observe(el)
+      })
+      items = Array.from(root.querySelectorAll('[data-drift],[data-head]'))
+      onScroll()
+    }
+
+    scan()
+    const mo = new MutationObserver(scan)
+    mo.observe(root, { childList: true, subtree: true })
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      io.disconnect()
+      mo.disconnect()
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [rootRef, key])
+}
+
+// tap ripple + haptic-feeling press (delegated; works for mouse and touch)
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v))
+
+// Words rise one by one when the header enters the viewport (see .wstag in fx.css)
+export function WordStagger({ text, className = '', as: Tag = 'h2', ...rest }) {
+  const words = text.split(' ')
+  return (
+    <Tag className={`wstag ${className}`} data-wstagger aria-label={text} {...rest}>
+      {words.map((w, i) => (
+        <span key={i} aria-hidden="true" className="wstag-w" style={{ transitionDelay: `${Math.min(i, 8) * 70}ms` }}>
+          {w}
+          {i < words.length - 1 ? ' ' : ''}
+        </span>
+      ))}
+    </Tag>
+  )
+}

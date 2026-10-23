@@ -1,3 +1,4 @@
+import { WordStagger } from '../components/fx.jsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
@@ -104,7 +105,7 @@ export default function Home() {
           <Marquee items={['Gaming accounts', 'Social accounts', 'Gift cards', 'Naira pricing', 'Bank transfer', 'Delivered in chat']} />
 
           <section data-reveal aria-label="Categories">
-            <h2 className="shine-head font-display text-xl mb-4" data-shine>Shop by category</h2>
+            <WordStagger text="Shop by category" className="shine-head font-display text-xl mb-4" data-shine />
             <div className="snap-row md:grid md:grid-cols-3 md:overflow-visible md:snap-none md:gap-4">
             {CATEGORIES.map((c) => (
               <Link
@@ -137,7 +138,7 @@ export default function Home() {
           </section>
 
           <section data-reveal aria-label="How it works">
-            <h2 className="shine-head font-display text-xl mb-4" data-io="slide" data-head data-shine>How it works</h2>
+            <WordStagger text="How it works" className="shine-head font-display text-xl mb-4" data-shine />
             <ol className="grid gap-4 md:grid-cols-3">
               <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">1</span><div><p className="font-display">Pick listing</p><p className="text-muted text-sm">Choose the account or gift card you want.</p></div></li>
               <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">2</span><div><p className="font-display">Pay by bank transfer</p><p className="text-muted text-sm">Send the exact naira amount to the account shown at checkout.</p></div></li>
@@ -146,7 +147,7 @@ export default function Home() {
           </section>
 
           <section data-reveal aria-label="FAQ">
-            <h2 className="shine-head font-display text-xl mb-4" data-io="crawl" data-shine>Questions</h2>
+            <WordStagger text="Questions" className="shine-head font-display text-xl mb-4" data-shine />
             <div className="flex flex-col gap-2">
               {FAQS.map((f) => (
                 <details key={f.q} className="card p-5 group">

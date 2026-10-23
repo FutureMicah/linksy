@@ -108,7 +108,7 @@ function ProductCard({ listing, hot = false }) {
         <Link to={`/product/${listing.id}`} className="block">
           <div className="tile-media relative h-40 md:h-48">
             <div data-drift="0.12" className="h-full w-full scale-[1.12]">
-              <div className="tilt-layer h-full w-full" style={{ '--z': '18px', '--sx': '-7px', '--sy': '-5px' }}>
+              <div data-cparallax className="tilt-layer h-full w-full" style={{ '--z': '18px', '--sx': '-7px', '--sy': '-5px' }}>
                 <Cover listing={listing} className="h-full w-full" />
               </div>
             </div>
