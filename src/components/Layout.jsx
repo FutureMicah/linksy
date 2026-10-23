@@ -7,6 +7,7 @@ import Magnetic from './Magnetic.jsx'
 import { ScrollProgress, CursorGlow, useRipple, useScrollFx, useScrollReactive } from './fx.jsx'
 import Aurora from './Aurora.jsx'
 import Spider from './Spider.jsx'
+import FloatingArt from './FloatingArt.jsx'
 import Countdown from './Countdown.jsx'
 import BackToTop from './BackToTop.jsx'
 import HeaderSearch from './HeaderSearch.jsx'
@@ -92,6 +93,7 @@ export default function Layout() {
   return (
     <div className="grain min-h-screen flex flex-col">
       <div className="ambient" />
+      <FloatingArt key={pathname} />
       <ScrollProgress />
       {showAurora && <Aurora />}
       <CursorGlow />
