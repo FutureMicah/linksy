@@ -4,7 +4,7 @@ import { reducedMotion, finePointer, lowPower, IDLE_MS } from '../lib/motion.js'
 // Interactive screen spider: a fixed, pointer-transparent overlay.
 // Crawls the viewport edges, scurries faster while you scroll, pauses when idle,
 // startles (leg-splay hop + dust puff) when touched or poked, lazily keeps a distance
-// from the desktop cursor, does an occasional idle spin/dance, and trails a faint silk line.
+// from the desktop cursor, does an occasional idle spin/dance, .
 // Transform + SVG path updates inside one requestAnimationFrame loop. Silent.
 // Under prefers-reduced-motion it renders once, static, and never animates.
 
@@ -12,7 +12,6 @@ const L1 = 12 // upper leg segment (local units)
 const L2 = 14 // lower leg segment
 const REACH = 22 // rest foot distance from hip
 const TOP_MIN = 96 // keep clear of the sticky header
-const TRAIL_N = 28 // silk trail samples
 const HIP_X = [6, 2, -3, -8]
 const HIP_Y = [4, 6, 6, 4]
 const THETA = [48, 82, 112, 142] // leg angles from the body's forward axis, degrees
@@ -55,7 +54,6 @@ export default function Spider() {
   const bodyRef = useRef(null)
   const threadSvgRef = useRef(null)
   const threadRef = useRef(null)
-  const silkRef = useRef(null)
   const dustRef = useRef(null)
   const legEls = useRef([])
 
@@ -64,9 +62,8 @@ export default function Spider() {
     const body = bodyRef.current
     const threadSvg = threadSvgRef.current
     const thread = threadRef.current
-    const silk = silkRef.current
     const dust = dustRef.current
-    if (!wrap || !body || !thread || !silk || !dust) return undefined
+    if (!wrap || !body || !thread || !dust) return undefined
 
     const rm = reducedMotion() || lowPower()
     const fine = finePointer()
@@ -249,9 +246,6 @@ export default function Spider() {
       } else {
         thread.setAttribute('opacity', '0')
       }
-      if (st.trail.length > 1) {
-        silk.setAttribute('d', st.trail.map((p, i) => `${i ? 'L' : 'M'}${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(''))
-      }
       if (st.dustT >= 0) {
         const p = clamp(st.dustT / 0.5, 0, 1)
         dust.style.opacity = (0.5 * (1 - p)).toFixed(3)
@@ -421,14 +415,6 @@ export default function Spider() {
         stepLegs(dt, idle ? 12 : 10, (st.mode === 'dart' ? 0.09 : 0.14) / boost, 2)
       }
 
-      // faint silk trail behind the body
-      const lp = st.trail[st.trail.length - 1]
-      if (!lp || Math.hypot(lp.x - st.x, lp.y - st.y) > 1.5) {
-        if (lp && Math.hypot(lp.x - st.x, lp.y - st.y) > 200 * S) st.trail.length = 0
-        st.trail.push({ x: st.x, y: st.y })
-        if (st.trail.length > TRAIL_N) st.trail.shift()
-      }
-
       draw(now)
       // park the loop when the tab is hidden or the page has been idle for a while
       raf = !document.hidden && now - lastActive < IDLE_MS ? requestAnimationFrame(frame) : 0
@@ -509,7 +495,6 @@ export default function Spider() {
         height="100%"
         style={{ position: 'absolute', inset: 0 }}
       >
-        <path ref={silkRef} fill="none" stroke="rgba(30,41,59,0.14)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
         <line ref={threadRef} stroke="rgba(30,41,59,0.5)" strokeWidth="1" opacity="0" />
       </svg>
 
