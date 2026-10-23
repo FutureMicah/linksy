@@ -16,6 +16,12 @@ export const FLOATING_ART = [
   { src: '/img/steam-account-40-games.webp', size: 64, depth: 0.8, shape: 'diag' },
   { src: '/img/valorant-account-sold-example.webp', size: 44, depth: 0.3, shape: 'round' },
   { src: '/img/youtube-10k-monetized.webp', size: 88, depth: 0.6, shape: 'diag' },
+  { src: '/img/decor/art-02.webp', size: 84, depth: 0.85, shape: 'round' },
+  { src: '/img/decor/art-04.webp', size: 62, depth: 0.55, shape: 'diag' },
+  { src: '/img/decor/art-06.webp', size: 58, depth: 0.5, shape: 'hex' },
+  { src: '/img/decor/art-07.webp', size: 74, depth: 0.7, shape: 'round' },
+  { src: '/img/decor/art-08.webp', size: 68, depth: 0.65, shape: 'diag' },
+  { src: '/img/decor/art-09.webp', size: 78, depth: 0.8, shape: 'hex' },
 ]
 
-export const FLOATING_ART_COUNT = { min: 5, max: 7 }
+export const FLOATING_ART_COUNT = { min: 5, max: 8 }

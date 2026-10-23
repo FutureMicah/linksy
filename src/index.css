@@ -277,6 +277,17 @@ select.input {
   box-shadow: 0 24px 50px -28px rgba(132, 204, 22, 0.45), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 
+
+/* ---------- hero inline art chips (transform-only float) ---------- */
+.hero-chip { box-shadow: 0 18px 36px -18px rgba(132, 204, 22, 0.55); border: 1px solid rgba(255,255,255,0.95); will-change: transform; }
+.hero-chip--a { animation: hero-float 6.5s ease-in-out infinite; }
+.hero-chip--b { animation: hero-float 7.8s ease-in-out -2.5s infinite; }
+.hero-chip--c { animation: hero-float 5.9s ease-in-out -4s infinite; }
+@keyframes hero-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50% { transform: translate3d(0, -7px, 0) rotate(2deg); }
+}
+
 /* ---------- marquee ---------- */
 .marquee-track {
   display: flex;

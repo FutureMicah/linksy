@@ -96,9 +96,9 @@ export default function Hero({ stats }) {
             DIGITAL GOODS / INSTANT HANDOVER
           </p>
           <h1 className="font-display uppercase leading-[0.88] text-[clamp(3.2rem,14vw,7.5rem)]">
-            <span className="block overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gaming</span></span>
-            <span className="block overflow-hidden pb-1"><span data-hero-line className="block foil-text">accounts.</span></span>
-            <span className="block overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gift cards.</span></span>
+            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gaming</span><img src="/img/decor/art-01.webp" alt="" width="64" height="90" className="hero-chip hero-chip--a w-12 h-16 md:w-16 md:h-24 object-cover rounded-2xl shrink-0" /></span>
+            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">accounts.</span><img src="/img/decor/art-05.webp" alt="" width="64" height="90" className="hero-chip hero-chip--b w-12 h-16 md:w-16 md:h-24 object-cover rounded-[1.25rem] shrink-0" /></span>
+            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gift cards.</span><img src="/img/decor/art-03.webp" alt="" width="64" height="90" className="hero-chip hero-chip--c w-12 h-16 md:w-16 md:h-24 object-cover rounded-2xl shrink-0 [clip-path:polygon(0_0,100%_0,100%_72%,72%_100%,0_100%)]" /></span>
           </h1>
           <p data-hero-fade className="text-muted max-w-md text-[15px] leading-relaxed">
             Socials and gift cards too. Pay the exact amount by bank transfer in naira, then get your delivery in the chat once we confirm.
