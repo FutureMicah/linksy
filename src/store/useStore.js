@@ -18,14 +18,12 @@ export const useStore = create(
   persist(
     (set, get) => ({
       currency: 'NGN',
-      spiderOn: true,
       listings: SEED_LISTINGS,
       cart: [], // [{ id, qty }]
       orders: [],
       reviews: [], // [{ id, order_id, listing_ids, rating, comment, author, created_at }]
 
       setCurrency: (currency) => set({ currency }),
-      setSpiderOn: (spiderOn) => set({ spiderOn }),
 
       // ---- cart ----
       addToCart: (id) => {
@@ -226,6 +224,19 @@ export const useStore = create(
         return true
       },
     }),
-    { name: 'linksy-store-v1' },
+    {
+      name: 'linksy-store-v1',
+      version: 1,
+      // merge new seed fields (e.g. product images) into previously saved listings
+      migrate: (state, version) => {
+        if (state?.listings?.length && version < 1) {
+          state.listings = state.listings.map((l) => {
+            const seed = SEED_LISTINGS.find((s) => s.id === l.id)
+            return seed ? { ...l, image: seed.image } : l
+          })
+        }
+        return state
+      },
+    },
   ),
 )

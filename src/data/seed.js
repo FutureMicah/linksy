@@ -3,6 +3,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gm-fortnite-120',
     slug: 'fortnite-og-120-skins',
+    image: '/img/fortnite-og-120-skins.webp',
     category: 'gaming',
     title: 'Fortnite OG Account, 120 Skins',
     brand: 'Fortnite',
@@ -19,6 +20,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gm-cod-mobile-leg',
     slug: 'cod-mobile-legendary-prestige',
+    image: '/img/cod-mobile-legendary-prestige.webp',
     category: 'gaming',
     title: 'CODM Legendary Account, Prestige 60',
     brand: 'Call of Duty Mobile',
@@ -67,6 +69,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gm-ff-diamond',
     slug: 'free-fire-diamond-royale',
+    image: '/img/free-fire-diamond-royale.webp',
     category: 'gaming',
     title: 'Free Fire Diamond Royale Account',
     brand: 'Free Fire',
@@ -82,6 +85,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gm-steam-40',
     slug: 'steam-account-40-games',
+    image: '/img/steam-account-40-games.webp',
     category: 'gaming',
     title: 'Steam Account, 40 Games, VAC Clean',
     brand: 'Steam',
@@ -98,6 +102,7 @@ export const SEED_LISTINGS = [
   {
     id: 'so-ig-2019',
     slug: 'instagram-2019-12k',
+    image: '/img/instagram-2019-12k.webp',
     category: 'social',
     title: 'Instagram Account, 2019, 12K Followers',
     brand: 'Instagram',
@@ -145,6 +150,7 @@ export const SEED_LISTINGS = [
   {
     id: 'so-fb-page-8k',
     slug: 'facebook-page-8k-followers',
+    image: '/img/facebook-page-8k-followers.webp',
     category: 'social',
     title: 'Facebook Page, 8K Followers',
     brand: 'Facebook',
@@ -160,6 +166,7 @@ export const SEED_LISTINGS = [
   {
     id: 'so-yt-10k',
     slug: 'youtube-10k-monetized',
+    image: '/img/youtube-10k-monetized.webp',
     category: 'social',
     title: 'YouTube Channel, 10K Subs, Monetization Eligible',
     brand: 'YouTube',
@@ -176,6 +183,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gc-amazon-50',
     slug: 'amazon-us-50-gift-card',
+    image: '/img/amazon-us-50-gift-card.webp',
     category: 'giftcards',
     title: 'Amazon US $50 Gift Card (E-Code)',
     brand: 'Amazon',
@@ -191,6 +199,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gc-itunes-25',
     slug: 'apple-itunes-25-gift-card',
+    image: '/img/apple-itunes-25-gift-card.webp',
     category: 'giftcards',
     title: 'Apple iTunes $25 Gift Card',
     brand: 'Apple',
@@ -206,6 +215,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gc-google-play-20',
     slug: 'google-play-20-gift-card',
+    image: '/img/google-play-20-gift-card.webp',
     category: 'giftcards',
     title: 'Google Play $20 Gift Card',
     brand: 'Google Play',
@@ -221,6 +231,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gc-steam-50',
     slug: 'steam-wallet-50',
+    image: '/img/steam-wallet-50.webp',
     category: 'giftcards',
     title: 'Steam Wallet $50 Code',
     brand: 'Steam',
@@ -236,6 +247,7 @@ export const SEED_LISTINGS = [
   {
     id: 'gc-xbox-gp',
     slug: 'xbox-game-pass-ultimate-3m',
+    image: '/img/xbox-game-pass-ultimate-3m.webp',
     category: 'giftcards',
     title: 'Xbox Game Pass Ultimate, 3 Months',
     brand: 'Xbox',
