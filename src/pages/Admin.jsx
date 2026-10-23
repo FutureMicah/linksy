@@ -661,6 +661,7 @@ function Settings({ me }) {
   const setCurrency = useStore((s) => s.setCurrency)
   const changeOwnPasscode = useStore((s) => s.changeOwnPasscode)
   const [logoErr, setLogoErr] = useState('')
+  const [bgErr, setBgErr] = useState('')
   const [heroLines, setHeroLines] = useState(settings.heroLines.join('\n'))
   const [heroSub, setHeroSub] = useState(settings.heroSub)
   const [trust, setTrust] = useState(settings.trustItems.join('\n'))
@@ -725,6 +726,40 @@ function Settings({ me }) {
       </section>
 
       <section className="card p-5 flex flex-col gap-3">
+        <h2 className="font-display text-lime-ink">BACKGROUND IMAGE</h2>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="w-40 h-24 rounded-xl border border-line grid place-items-center bg-white/60 overflow-hidden">
+            {settings.bgImage ? <img src={settings.bgImage} alt="current background" className="w-full h-full object-cover" /> : <span className="text-xs text-muted">no background (plain white)</span>}
+          </div>
+          {canEdit && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                className="text-xs text-muted"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  e.target.value = ''
+                  if (!file) return
+                  try {
+                    const { readImage: ri } = await import('../lib/admin.js')
+                    const dataUrl = await ri(file, 1600, 'image/jpeg', 0.8)
+                    save({ bgImage: dataUrl }, 'background updated')
+                    setBgErr('')
+                  } catch (err) {
+                    setBgErr(err.message)
+                  }
+                }}
+              />
+              {settings.bgImage && <button className="btn-ghost !py-1.5 !px-3 !text-xs" onClick={() => save({ bgImage: '' }, 'background removed')}>CLEAR BACKGROUND</button>}
+            </>
+          )}
+        </div>
+        {bgErr && <div className="text-danger text-xs">{bgErr}</div>}
+        <p className="text-xs text-muted">Shows behind every page under a light overlay so the text stays readable.</p>
+      </section>
+
+      <section className="card p-5 flex flex-col gap-3">
         <h2 className="font-display text-lime-ink">HERO</h2>
         <div>
           <label className="label">Headline (one line per row, up to 3)</label>
@@ -770,7 +805,6 @@ function Settings({ me }) {
         <h2 className="font-display text-lime-ink mb-2">TOGGLES</h2>
         <Toggle label="Spider (site-wide)" hint="Turns the screen spider off for every visitor. Visitors can still hide it in the footer." value={settings.spiderEnabled} onChange={(v) => save({ spiderEnabled: v })} />
         <Toggle label="Countdown banner" hint="The holiday countdown strip at the top." value={settings.countdownOn} onChange={(v) => save({ countdownOn: v })} />
-        <Toggle label="Floating art" hint="The floating art chips on every page." value={settings.floatingArtOn} onChange={(v) => save({ floatingArtOn: v })} />
       </section>
 
       <section className="card p-5 flex flex-col gap-3">

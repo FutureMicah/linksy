@@ -9,7 +9,6 @@ import { ScrollProgress, CursorGlow, useRipple, useScrollFx, useScrollReactive }
 // decorative / non-critical layers load after first paint (see useDeferredReady) so the shell JS stays small
 const Aurora = lazy(() => import('./Aurora.jsx'))
 const Spider = lazy(() => import('./Spider.jsx'))
-const FloatingArt = lazy(() => import('./FloatingArt.jsx'))
 const Countdown = lazy(() => import('./Countdown.jsx'))
 const BackToTop = lazy(() => import('./BackToTop.jsx'))
 const HeaderSearch = lazy(() => import('./HeaderSearch.jsx'))
@@ -82,10 +81,12 @@ export default function Layout() {
   return (
     <div className="grain min-h-screen flex flex-col">
       <div className="ambient" />
-      {decor && siteSettings.floatingArtOn && (
-        <Suspense fallback={null}>
-          <FloatingArt key={pathname} />
-        </Suspense>
+      {siteSettings.bgImage && (
+        <div
+          aria-hidden="true"
+          className="bg-custom"
+          style={{ backgroundImage: `linear-gradient(rgba(255,255,255,0.86), rgba(255,255,255,0.86)), url(${siteSettings.bgImage})` }}
+        />
       )}
       {decor && <ScrollProgress />}
       {decor && showAurora && (
@@ -94,7 +95,7 @@ export default function Layout() {
         </Suspense>
       )}
       {decor && <CursorGlow />}
-      {decor && spiderOn && siteSettings.spiderEnabled && !reducedMotion() && (
+      {decor && spiderOn && siteSettings.spiderEnabled !== false && (
         <Suspense fallback={null}>
           <Spider />
         </Suspense>

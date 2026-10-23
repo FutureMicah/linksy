@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { reducedMotion, finePointer, lowPower, IDLE_MS } from '../lib/motion.js'
+import { reducedMotion, finePointer, IDLE_MS } from '../lib/motion.js'
 
 // Interactive screen spider: a fixed, pointer-transparent overlay.
 // Crawls the viewport edges, scurries faster while you scroll, pauses when idle,
@@ -65,7 +65,8 @@ export default function Spider() {
     const dust = dustRef.current
     if (!wrap || !body || !thread || !dust) return undefined
 
-    const rm = reducedMotion() || lowPower()
+    // only the OS reduced-motion setting freezes the spider. low-power phones still get it (it is a small SVG).
+    const rm = reducedMotion()
     const fine = finePointer()
 
     let W = window.innerWidth

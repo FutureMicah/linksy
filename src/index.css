@@ -120,6 +120,17 @@ body {
 }
 
 .grain::after { display: none; }
+
+/* admin background image: fixed, behind content (same layer as .ambient), inline backgroundImage adds the overlay */
+.bg-custom {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 .cut { border-radius: 1.5rem; }
 
 /* ---------- buttons: pills ---------- */

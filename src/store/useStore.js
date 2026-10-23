@@ -11,7 +11,7 @@ export const DEFAULT_SETTINGS = {
   heroSub: 'Socials and gift cards too. Pay the exact amount by bank transfer in naira, then get your delivery in the chat once we confirm.',
   trustItems: ['Escrow protected', 'Verified sellers', 'Bank transfer', 'Funds held until you confirm', 'Delivered in chat', '24h inspection window'],
   countdownOn: true,
-  floatingArtOn: true,
+  bgImage: '', // dataURL, page background behind content (admin Settings)
   spiderEnabled: true, // site-wide master for the spider (footer toggle still works per visitor)
 }
 
@@ -391,7 +391,7 @@ export const useStore = create(
     }),
     {
       name: 'linksy-store-v1', // keep the key so saved orders and listings survive
-      version: 2,
+      version: 3,
       // merge new seed fields (e.g. product images) into previously saved listings
       migrate: (state, version) => {
         if (state?.listings?.length && version < 1) {
@@ -407,6 +407,12 @@ export const useStore = create(
           const hasOwner = list.some((u) => String(u.email || '').trim().toLowerCase() === OWNER_EMAIL)
           state.adminUsers = hasOwner ? list : [ownerSeed(), ...list]
           if (!state.siteSettings) state.siteSettings = DEFAULT_SETTINGS
+        }
+        // v3: browsers saved before newer settings keys (spiderEnabled, bgImage) existed
+        // kept an old siteSettings object that lacked them; merge defaults so every key is defined.
+        if (version < 3) {
+          state.siteSettings = { ...DEFAULT_SETTINGS, ...(state.siteSettings || {}) }
+          delete state.siteSettings.floatingArtOn
         }
         return state
       },
