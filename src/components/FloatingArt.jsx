@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { FLOATING_ART, FLOATING_ART_COUNT } from '../data/floatingArt.js'
-import { reducedMotion, finePointer } from '../lib/motion.js'
+import { reducedMotion, finePointer, lowPower, IDLE_MS } from '../lib/motion.js'
 
 // Decorative floating art chips. Rendered in a fixed layer at z-index -1 (under every
 // page block, cards, nav and header), so they never block text or buttons.
@@ -61,7 +61,7 @@ export default function FloatingArt() {
   const states = useRef([])
 
   useEffect(() => {
-    const still = reducedMotion()
+    const still = reducedMotion() || lowPower()
     const fine = finePointer()
     const els = elsRef.current
     const W0 = window.innerWidth
@@ -97,6 +97,7 @@ export default function FloatingArt() {
     let T = 0
     let raf = 0
     let last = performance.now()
+    let lastActive = last
     let scrollY = window.scrollY
     let lastScrollY = scrollY
     let mouse = null
@@ -174,10 +175,21 @@ export default function FloatingArt() {
         }
         paint(st, dx, dy)
       })
-      raf = requestAnimationFrame(frame)
+      // park the loop when the tab is hidden or the page has been idle for a while
+      raf = !document.hidden && now - lastActive < IDLE_MS ? requestAnimationFrame(frame) : 0
     }
 
+    const wake = () => {
+      lastActive = performance.now()
+      if (!raf && !document.hidden) {
+        last = lastActive
+        raf = requestAnimationFrame(frame)
+      }
+    }
+    const onVisibility = () => { if (!document.hidden) wake() }
+
     const onScroll = () => {
+      wake()
       const ds = window.scrollY - lastScrollY
       lastScrollY = window.scrollY
       scrollY = window.scrollY
@@ -208,8 +220,9 @@ export default function FloatingArt() {
       })
     }
 
-    const onPointerDown = (e) => startle(e.clientX, e.clientY, false)
+    const onPointerDown = (e) => { wake(); startle(e.clientX, e.clientY, false) }
     const onPointerMove = (e) => {
+      wake()
       if (e.pointerType === 'mouse') {
         mouse = { x: e.clientX, y: e.clientY }
         return
@@ -229,6 +242,7 @@ export default function FloatingArt() {
     window.addEventListener('pointermove', onPointerMove, { passive: true })
     document.documentElement.addEventListener('mouseleave', onLeave)
     window.addEventListener('resize', onResize)
+    document.addEventListener('visibilitychange', onVisibility)
     raf = requestAnimationFrame(frame)
 
     return () => {
@@ -238,6 +252,7 @@ export default function FloatingArt() {
       window.removeEventListener('pointermove', onPointerMove)
       document.documentElement.removeEventListener('mouseleave', onLeave)
       window.removeEventListener('resize', onResize)
+      document.removeEventListener('visibilitychange', onVisibility)
     }
   }, [chips])
 

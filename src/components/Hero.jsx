@@ -92,8 +92,8 @@ export default function Hero({ stats }) {
           <span key={i} className="sparkle" style={s} />
         ))}
       </div>
-      <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-lime/10 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-cyan/10 blur-3xl pointer-events-none" />
+      <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-[radial-gradient(closest-side,rgba(163,230,53,0.16),rgba(163,230,53,0))] pointer-events-none" />
+      <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(8,145,178,0.12),rgba(8,145,178,0))] pointer-events-none" />
 
       <div className="relative grid md:grid-cols-[1.25fr_0.85fr] gap-8 px-5 py-12 md:px-12 md:py-20 items-center min-h-[62vh]">
         <div className="flex flex-col gap-5">
@@ -101,9 +101,9 @@ export default function Hero({ stats }) {
             DIGITAL GOODS / INSTANT HANDOVER
           </p>
           <h1 className="font-display uppercase leading-[0.88] text-[clamp(3.2rem,14vw,7.5rem)]">
-            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gaming</span><img src="/img/decor/art-01.webp" alt="" width="64" height="90" className="hero-chip hero-chip--a w-12 h-16 md:w-16 md:h-24 object-cover rounded-2xl shrink-0" /></span>
-            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">accounts.</span><img src="/img/decor/art-05.webp" alt="" width="64" height="90" className="hero-chip hero-chip--b w-12 h-16 md:w-16 md:h-24 object-cover rounded-[1.25rem] shrink-0" /></span>
-            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gift cards.</span><img src="/img/decor/art-03.webp" alt="" width="64" height="90" className="hero-chip hero-chip--c w-12 h-16 md:w-16 md:h-24 object-cover rounded-2xl shrink-0 [clip-path:polygon(0_0,100%_0,100%_72%,72%_100%,0_100%)]" /></span>
+            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gaming</span><img src="/img/decor/art-01.webp" alt="" width="64" height="90" className="hero-chip hero-chip--a w-[clamp(56px,16vw,96px)] md:w-24 aspect-[2/3] h-auto object-cover rounded-2xl shrink-0" /></span>
+            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">accounts.</span><img src="/img/decor/art-05.webp" alt="" width="64" height="90" className="hero-chip hero-chip--b w-[clamp(48px,14vw,128px)] md:w-32 aspect-[2/3] h-auto object-cover rounded-[1.25rem] shrink-0" /></span>
+            <span className="flex items-center gap-3 overflow-hidden pb-1"><span data-hero-line className="block foil-text">Gift cards.</span><img src="/img/decor/art-03.webp" alt="" width="64" height="90" className="hero-chip hero-chip--c max-[379px]:hidden w-16 aspect-[2/3] h-auto object-cover rounded-2xl shrink-0 [clip-path:polygon(0_0,100%_0,100%_72%,72%_100%,0_100%)]" /></span>
           </h1>
           <p data-hero-fade className="text-muted max-w-md text-[15px] leading-relaxed">
             Socials and gift cards too. Pay the exact amount by bank transfer in naira, then get your delivery in the chat once we confirm.

@@ -85,16 +85,15 @@
 .aurora-blob {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(80px);
   opacity: 0.22;
   will-change: transform;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
-.aurora-b1 { width: 46vmax; height: 46vmax; left: -14vmax; top: -10vmax; background: #a3e635; animation: aurora-a 34s; }
-.aurora-b2 { width: 40vmax; height: 40vmax; right: -12vmax; top: 30%; background: #d9f99d; animation: aurora-b 42s; }
-.aurora-b3 { width: 34vmax; height: 34vmax; left: 25%; bottom: -14vmax; background: #a3e635; animation: aurora-c 38s; opacity: 0.16; }
+.aurora-b1 { width: 46vmax; height: 46vmax; left: -14vmax; top: -10vmax; background: radial-gradient(closest-side, #a3e635 0%, rgba(163,230,53,0.45) 45%, rgba(163,230,53,0) 100%); animation: aurora-a 34s; }
+.aurora-b2 { width: 40vmax; height: 40vmax; right: -12vmax; top: 30%; background: radial-gradient(closest-side, #d9f99d 0%, rgba(217,249,157,0.45) 45%, rgba(217,249,157,0) 100%); animation: aurora-b 42s; }
+.aurora-b3 { width: 34vmax; height: 34vmax; left: 25%; bottom: -14vmax; background: radial-gradient(closest-side, #a3e635 0%, rgba(163,230,53,0.45) 45%, rgba(163,230,53,0) 100%); animation: aurora-c 38s; opacity: 0.16; }
 @keyframes aurora-a {
   0% { transform: translate3d(0, 0, 0) scale(1); }
   100% { transform: translate3d(14vmax, 8vmax, 0) scale(1.12); }

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { reducedMotion, finePointer } from '../lib/motion.js'
+import { reducedMotion, finePointer, lowPower, IDLE_MS } from '../lib/motion.js'
 
 // Interactive screen spider: a fixed, pointer-transparent overlay.
 // Crawls the viewport edges, scurries faster while you scroll, pauses when idle,
@@ -68,7 +68,7 @@ export default function Spider() {
     const dust = dustRef.current
     if (!wrap || !body || !thread || !silk || !dust) return undefined
 
-    const rm = reducedMotion()
+    const rm = reducedMotion() || lowPower()
     const fine = finePointer()
 
     let W = window.innerWidth
@@ -270,6 +270,7 @@ export default function Spider() {
 
     let raf = 0
     let last = performance.now()
+    let lastActive = last
 
     const frame = (now) => {
       const dt = Math.min(0.05, (now - last) / 1000)
@@ -429,8 +430,18 @@ export default function Spider() {
       }
 
       draw(now)
-      raf = requestAnimationFrame(frame)
+      // park the loop when the tab is hidden or the page has been idle for a while
+      raf = !document.hidden && now - lastActive < IDLE_MS ? requestAnimationFrame(frame) : 0
     }
+
+    const wake = () => {
+      lastActive = performance.now()
+      if (!raf && !document.hidden) {
+        last = lastActive
+        raf = requestAnimationFrame(frame)
+      }
+    }
+    const onVisibility = () => { if (!document.hidden) wake() }
 
     // startle: a poke or touch near the spider makes it hop back with legs splayed and a puff of dust
     const poke = (px, py) => {
@@ -455,8 +466,9 @@ export default function Spider() {
       enter('dart')
     }
 
-    const onPointerDown = (e) => poke(e.clientX, e.clientY)
+    const onPointerDown = (e) => { wake(); poke(e.clientX, e.clientY) }
     const onPointerMove = (e) => {
+      wake()
       if (e.pointerType === 'mouse') {
         st.mx = e.clientX
         st.my = e.clientY
@@ -469,6 +481,8 @@ export default function Spider() {
     window.addEventListener('pointerdown', onPointerDown, { passive: true })
     window.addEventListener('pointermove', onPointerMove, { passive: true })
     window.addEventListener('resize', onResize)
+    window.addEventListener('scroll', wake, { passive: true })
+    document.addEventListener('visibilitychange', onVisibility)
 
     // start on the page after a short pause
     enter('pause', 1.2)
@@ -479,6 +493,8 @@ export default function Spider() {
       window.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('resize', onResize)
+      window.removeEventListener('scroll', wake)
+      document.removeEventListener('visibilitychange', onVisibility)
     }
   }, [])
 

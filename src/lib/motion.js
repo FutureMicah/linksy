@@ -3,6 +3,14 @@ import { useLayoutEffect } from 'react'
 export const reducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+// low-power devices (<4GB RAM or <=4 cores): skip the decorative animations entirely
+export const lowPower = () =>
+  typeof navigator !== 'undefined' &&
+  ((navigator.deviceMemory && navigator.deviceMemory < 4) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4))
+
+// decorative loops park after this long without pointer/scroll input
+export const IDLE_MS = 30000
+
 export const finePointer = () =>
   typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches
 
