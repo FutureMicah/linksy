@@ -114,6 +114,7 @@ body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  overflow: hidden;
   background:
     radial-gradient(900px 520px at 85% -10%, rgba(14, 124, 134, 0.05), transparent 60%),
     radial-gradient(700px 500px at -10% 30%, rgba(3, 105, 161, 0.04), transparent 60%),

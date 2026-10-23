@@ -156,7 +156,7 @@ export default function Layout() {
 
       <Countdown />
 
-      <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
+      <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 overflow-x-clip">
         <Suspense fallback={<div className="min-h-[50vh]" />}>
           <div key={pathname} className="route-fade">
             <Outlet />
