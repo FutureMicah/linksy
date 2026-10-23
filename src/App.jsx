@@ -14,6 +14,18 @@ const Order = lazy(() => import('./pages/Order.jsx'))
 const Admin = lazy(() => import('./pages/Admin.jsx'))
 const NotFound = lazy(() => import('./pages/NotFound.jsx'))
 
+// mounted inside the Suspense boundary, so it only mounts once the route chunk has loaded and committed.
+// it signals main.jsx (which removes the splash after a paint) via a window event.
+function ReadyBeacon() {
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => window.dispatchEvent(new Event('linksy:ready')))
+    })
+    return () => cancelAnimationFrame(id)
+  }, [])
+  return null
+}
+
 export default function App() {
   const { pathname } = useLocation()
 
@@ -45,6 +57,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
+      <ReadyBeacon />
       <InstallPrompt />
     </Suspense>
   )
