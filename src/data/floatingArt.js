@@ -22,6 +22,9 @@ export const FLOATING_ART = [
   { src: '/img/decor/art-07.webp', size: 74, depth: 0.7, shape: 'round' },
   { src: '/img/decor/art-08.webp', size: 68, depth: 0.65, shape: 'diag' },
   { src: '/img/decor/art-09.webp', size: 78, depth: 0.8, shape: 'hex' },
+  { src: '/img/decor/art-10.webp', size: 66, depth: 0.6, shape: 'round' },
+  { src: '/img/decor/art-11.webp', size: 72, depth: 0.75, shape: 'hex' },
+  { src: '/img/decor/art-12.webp', size: 60, depth: 0.5, shape: 'diag' },
 ]
 
 export const FLOATING_ART_COUNT = { min: 5, max: 8 }
