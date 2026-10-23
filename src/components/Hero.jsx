@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { gsap, useGSAP, reducedMotion, finePointer } from '../lib/motion.js'
+import { reducedMotion, finePointer } from '../lib/motion.js'
 import { CATEGORIES } from '../config.js'
 import Magnetic from './Magnetic.jsx'
 import Cover from './Cover.jsx'
@@ -31,45 +31,50 @@ export default function Hero({ stats }) {
     return first
   })
 
-  useGSAP(
-    () => {
-      const root = ref.current
-      if (!root) return
-      const q = (s) => Array.from(root.querySelectorAll(s))
-
-      // count-up numbers (always set final value when motion is reduced)
-      const counters = q('[data-count]')
-      if (reducedMotion()) {
-        counters.forEach((el) => (el.textContent = el.dataset.count))
-        return
+  // entrance is CSS (see fx.css hero rules). this effect only runs the count-up and the scroll parallax.
+  useEffect(() => {
+    const root = ref.current
+    if (!root) return undefined
+    const counters = Array.from(root.querySelectorAll('[data-count]'))
+    if (reducedMotion()) {
+      counters.forEach((el) => (el.textContent = el.dataset.count))
+      return undefined
+    }
+    let raf = 0
+    const t0 = window.setTimeout(() => {
+      const start = performance.now()
+      const tick = (now) => {
+        const p = Math.min(1, (now - start) / 1900)
+        const e = 1 - Math.pow(1 - p, 2)
+        counters.forEach((el) => (el.textContent = Math.round((Number(el.dataset.count) || 0) * e)))
+        if (p < 1) raf = requestAnimationFrame(tick)
       }
+      raf = requestAnimationFrame(tick)
+    }, 700)
 
-      const tl = gsap.timeline({ defaults: { ease: 'expo.out' } })
-      tl.from(q('[data-hero-line]'), { yPercent: 115, duration: 1.4, stagger: 0.1 })
-        .from(q('[data-hero-fade]'), { opacity: 0, y: 26, duration: 1, stagger: 0.09 }, '-=1.1')
-        .from(q('[data-orb]'), { scale: 0.55, opacity: 0, rotate: -12, duration: 1.6, stagger: 0.14, ease: 'back.out(1.3)' }, '-=1.3')
-
-      counters.forEach((el) => {
-        const target = Number(el.dataset.count) || 0
-        const o = { v: 0 }
-        gsap.to(o, {
-          v: target,
-          duration: 1.9,
-          delay: 0.7,
-          ease: 'power2.out',
-          onUpdate: () => (el.textContent = Math.round(o.v)),
-        })
+    // parallax: each orb drifts at its own depth while the hero scrolls away
+    const parallax = Array.from(root.querySelectorAll('[data-parallax]'))
+    let pr = 0
+    const upd = () => {
+      pr = 0
+      const r = root.getBoundingClientRect()
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height)))
+      parallax.forEach((el) => {
+        el.style.transform = `translate3d(0,${(-Number(el.dataset.speed) * 90 * p).toFixed(2)}%,0)`
       })
-
-      // parallax: each orb drifts at its own depth while the hero scrolls away
-      gsap.to(q('[data-parallax]'), {
-        yPercent: (i, el) => -Number(el.dataset.speed) * 90,
-        ease: 'none',
-        scrollTrigger: { trigger: root, start: 'top top', end: 'bottom top', scrub: true },
-      })
-    },
-    { scope: ref },
-  )
+    }
+    const onScroll = () => { if (!pr) pr = requestAnimationFrame(upd) }
+    if (parallax.length) {
+      window.addEventListener('scroll', onScroll, { passive: true })
+      upd()
+    }
+    return () => {
+      window.clearTimeout(t0)
+      cancelAnimationFrame(raf)
+      cancelAnimationFrame(pr)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
 
   const onMove = (e) => {
     if (!finePointer() || !ref.current) return

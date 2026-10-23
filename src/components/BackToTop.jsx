@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getLenis } from '../lib/lenis.js'
+import { getLenis } from '../lib/scroll-state.js'
 import { reducedMotion } from '../lib/motion.js'
 
 // Floating glass button: appears after the visitor scrolls down, smooth-scrolls to the top.

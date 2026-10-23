@@ -1,7 +1,7 @@
 // Scroll / touch / pointer / crawl effects. Transform and opacity only.
 // Every effect respects prefers-reduced-motion and gates hover-only work on fine pointers.
 import { useEffect, useRef } from 'react'
-import { gsap, useGSAP, reducedMotion, finePointer } from '../lib/motion.js'
+import { reducedMotion, finePointer } from '../lib/motion.js'
 
 // letters crawl in one by one (IntersectionObserver via the parent data-io="letters")
 export function CrawlText({ text, className = '', stagger = 26 }) {
@@ -50,18 +50,24 @@ export function ScrollProgress() {
   )
 }
 
-// soft glow that trails the cursor (fine pointers only, never under reduced motion)
+// soft glow that trails the cursor (fine pointers only, never under reduced motion). rAF lerp, no library.
 export function CursorGlow() {
   const ref = useRef(null)
   useEffect(() => {
     const el = ref.current
-    if (!el || reducedMotion() || !finePointer()) return
-    const xTo = gsap.quickTo(el, 'x', { duration: 0.55, ease: 'power3.out' })
-    const yTo = gsap.quickTo(el, 'y', { duration: 0.55, ease: 'power3.out' })
+    if (!el || reducedMotion() || !finePointer()) return undefined
+    let x = 0, y = 0, tx = 0, ty = 0, raf = 0
+    const tick = () => {
+      x += (tx - x) * 0.14
+      y += (ty - y) * 0.14
+      el.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`
+      raf = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(tick) : 0
+    }
     const move = (e) => {
-      xTo(e.clientX)
-      yTo(e.clientY)
+      tx = e.clientX
+      ty = e.clientY
       el.style.opacity = '1'
+      if (!raf) raf = requestAnimationFrame(tick)
     }
     const leave = () => (el.style.opacity = '0')
     window.addEventListener('pointermove', move, { passive: true })
@@ -69,6 +75,7 @@ export function CursorGlow() {
     return () => {
       window.removeEventListener('pointermove', move)
       document.documentElement.removeEventListener('pointerleave', leave)
+      cancelAnimationFrame(raf)
     }
   }, [])
   return <div ref={ref} aria-hidden="true" className="cursor-glow fixed left-0 top-0 pointer-events-none" style={{ opacity: 0 }} />
@@ -257,34 +264,7 @@ export function useDragScroll(ref) {
   }, [ref])
 }
 
-// desktop only: the section pins while its track slides sideways as you scroll down
-export function useHorizontalPin(sectionRef, trackRef) {
-  useGSAP(
-    () => {
-      const sect = sectionRef.current
-      const track = trackRef.current
-      if (!sect || !track || reducedMotion() || !window.matchMedia('(min-width: 768px)').matches) return
-      const dist = () => Math.max(0, track.scrollWidth - sect.clientWidth)
-      if (dist() <= 0) return
-      const tween = gsap.to(track, {
-        x: () => -dist(),
-        ease: 'none',
-        scrollTrigger: {
-          trigger: sect,
-          start: 'top 22%',
-          end: () => `+=${dist()}`,
-          pin: true,
-          scrub: 0.6,
-          invalidateOnRefresh: true,
-        },
-      })
-      return () => tween.kill()
-    },
-    { scope: sectionRef },
-  )
-}
-
-// Scroll-reactive layer (one rAF loop, transform only):
+// Scroll-reactive layer, one rAF loop, transform only:
 // - .aurora drifts with scroll speed (translate3d on the container, blobs keep their own CSS drift)
 // - .tile-wrap nudges sideways a few px toward the scroll direction (uses the `translate` property, so hover/tilt transforms are untouched)
 // - [data-cparallax] images counter-move against their card as it crosses the viewport

@@ -11,7 +11,6 @@ import ReviewList from '../components/ReviewList.jsx'
 import { SEED_REVIEWS } from '../data/reviews.js'
 import { reviewsForListing, averageRating } from '../lib/reviews.js'
 import { CONFIG } from '../config.js'
-import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { useReveal } from '../lib/motion.js'
 
 const toneText = { lime: 'text-lime-ink', amber: 'text-lime-ink', danger: 'text-danger' }
@@ -27,15 +26,7 @@ export default function Product() {
   const scope = useRef(null)
   useReveal(scope, [id])
 
-  // hero art parallax + price count-in
-  useGSAP(
-    () => {
-      if (reducedMotion() || !listing) return
-      gsap.from('[data-pop]', { scale: 0.6, opacity: 0, duration: 1.1, ease: 'back.out(1.6)' })
-      gsap.from('[data-pdetail]', { opacity: 0, x: 24, duration: 0.8, stagger: 0.08, ease: 'power3.out', delay: 0.15 })
-    },
-    { scope, dependencies: [id] },
-  )
+  // hero art pop + price count-in are CSS (fx.css [data-pop] / [data-pdetail])
 
   if (!listing) {
     return (

@@ -6,8 +6,7 @@ import { formatPrice, stockLabel } from '../lib/format.js'
 import { categoryById } from '../config.js'
 import Cover from './Cover.jsx'
 import VerifiedSeller from './VerifiedSeller.jsx'
-import { gsap, reducedMotion } from '../lib/motion.js'
-import { burstConfetti } from '../lib/confetti.js'
+import { reducedMotion } from '../lib/motion.js'
 
 const toneClass = {
   lime: 'text-lime-ink border-lime/40 bg-lime/5',
@@ -91,8 +90,8 @@ function ProductCard({ listing, hot = false }) {
   const onAdd = () => {
     const ok = addToCart(listing.id)
     if (ok && btnRef.current && !reducedMotion()) {
-      gsap.fromTo(btnRef.current, { scale: 0.9 }, { scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' })
-      burstConfetti(btnRef.current)
+      btnRef.current.animate?.([{ transform: 'scale(0.9)' }, { transform: 'scale(1)' }], { duration: 500, easing: 'cubic-bezier(.3,1.5,.6,1)' })
+      import('../lib/confetti.js').then((m) => m.burstConfetti(btnRef.current))
     }
   }
 

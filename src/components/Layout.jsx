@@ -1,11 +1,12 @@
 import { Suspense, lazy, useEffect, useRef } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
-import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
-import { getLenis } from '../lib/lenis.js'
+import { reducedMotion } from '../lib/motion.js'
+import { getLenis } from '../lib/scroll-state.js'
+import { useDeferredReady } from '../lib/idle.js'
 import Magnetic from './Magnetic.jsx'
 import { ScrollProgress, CursorGlow, useRipple, useScrollFx, useScrollReactive } from './fx.jsx'
-// decorative / non-critical layers load after first paint so the shell JS stays small
+// decorative / non-critical layers load after first paint (see useDeferredReady) so the shell JS stays small
 const Aurora = lazy(() => import('./Aurora.jsx'))
 const Spider = lazy(() => import('./Spider.jsx'))
 const FloatingArt = lazy(() => import('./FloatingArt.jsx'))
@@ -49,22 +50,8 @@ export default function Layout() {
   const cartRef = useRef(null)
   const showAurora = pathname === '/' || pathname.startsWith('/product/')
 
-  // header entrance
-  useGSAP(
-    () => {
-      if (reducedMotion() || !headerRef.current) return
-      gsap.from(headerRef.current, { yPercent: -100, duration: 0.9, ease: 'expo.out' })
-      gsap.from(headerRef.current.querySelectorAll('[data-nav]'), {
-        opacity: 0,
-        y: -10,
-        duration: 0.7,
-        stagger: 0.06,
-        delay: 0.25,
-        ease: 'power3.out',
-      })
-    },
-    { scope: headerRef },
-  )
+  // header entrance is CSS (fx.css .hdr). decorative layers mount once the first paint is done.
+  const decor = useDeferredReady()
 
   // route change: reset scroll. The page crossfade is the keyed .route-fade wrapper below (CSS only).
   useEffect(() => {
@@ -76,7 +63,7 @@ export default function Layout() {
   // cart badge bounce
   useEffect(() => {
     if (!badgeRef.current || reducedMotion()) return
-    gsap.fromTo(badgeRef.current, { scale: 0.3 }, { scale: 1, duration: 0.7, ease: 'elastic.out(1, 0.4)' })
+    badgeRef.current.animate?.([{ transform: 'scale(0.3)' }, { transform: 'scale(1)' }], { duration: 700, easing: 'cubic-bezier(.3,1.6,.5,1)' })
   }, [cartCount])
 
   // cart icon bounces once each time an item is added (count goes up)
@@ -94,23 +81,25 @@ export default function Layout() {
   return (
     <div className="grain min-h-screen flex flex-col">
       <div className="ambient" />
-      <Suspense fallback={null}>
-        <FloatingArt key={pathname} />
-      </Suspense>
-      <ScrollProgress />
-      {showAurora && (
+      {decor && (
+        <Suspense fallback={null}>
+          <FloatingArt key={pathname} />
+        </Suspense>
+      )}
+      {decor && <ScrollProgress />}
+      {decor && showAurora && (
         <Suspense fallback={null}>
           <Aurora />
         </Suspense>
       )}
-      <CursorGlow />
-      {spiderOn && !reducedMotion() && (
+      {decor && <CursorGlow />}
+      {decor && spiderOn && !reducedMotion() && (
         <Suspense fallback={null}>
           <Spider />
         </Suspense>
       )}
 
-      <header ref={headerRef} className="sticky top-0 z-40 bg-ink/75 backdrop-blur-md border-b border-line">
+      <header ref={headerRef} className="hdr sticky top-0 z-40 bg-ink/75 backdrop-blur-md border-b border-line">
         <div className="grad-stream absolute inset-x-0 top-0 h-[2px]" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-3">
           <Link data-nav to="/" className="flex items-center gap-2 shrink-0">
@@ -166,9 +155,11 @@ export default function Layout() {
         </div>
       </header>
 
-      <Suspense fallback={null}>
-        <Countdown />
-      </Suspense>
+      {decor && (
+        <Suspense fallback={null}>
+          <Countdown />
+        </Suspense>
+      )}
 
       <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 pb-28 md:pb-10 overflow-x-clip">
         <Suspense fallback={<div className="min-h-[50vh]" />}>
@@ -177,9 +168,11 @@ export default function Layout() {
           </div>
         </Suspense>
       </main>
-      <Suspense fallback={null}>
-        <BackToTop />
-      </Suspense>
+      {decor && (
+        <Suspense fallback={null}>
+          <BackToTop />
+        </Suspense>
+      )}
 
 
       <nav className="app-nav md:hidden" aria-label="App">

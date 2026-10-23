@@ -1,11 +1,4 @@
-import { useRef } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useGSAP } from '@gsap/react'
-
-gsap.registerPlugin(ScrollTrigger, useGSAP)
-
-export { gsap, ScrollTrigger, useGSAP }
+import { useLayoutEffect } from 'react'
 
 export const reducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -13,30 +6,31 @@ export const reducedMotion = () =>
 export const finePointer = () =>
   typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches
 
-// Scroll-triggered reveal for every [data-reveal] inside the scope. Re-runs when deps change.
+// Scroll reveal for every [data-reveal] inside the scope (IntersectionObserver + CSS .rv / .rv-in).
+// Reduced motion: nothing is hidden, nothing is added.
 export function useReveal(scope, deps = []) {
-  useGSAP(
-    () => {
-      if (reducedMotion() || !scope.current) return
-      const els = Array.from(scope.current.querySelectorAll('[data-reveal]'))
-      if (!els.length) return
-      gsap.set(els, { opacity: 0, y: 48 })
-      ScrollTrigger.batch(els, {
-        start: 'top 92%',
-        once: true,
-        onEnter: (batch) =>
-          gsap.to(batch, {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            ease: 'power3.out',
-            stagger: 0.09,
-            overwrite: true,
-          }),
-      })
-    },
-    { scope, dependencies: deps },
-  )
+  useLayoutEffect(() => {
+    const root = scope.current
+    if (!root || reducedMotion() || typeof IntersectionObserver === 'undefined') return undefined
+    const els = Array.from(root.querySelectorAll('[data-reveal]'))
+    if (!els.length) return undefined
+    els.forEach((el) => el.classList.add('rv'))
+    const io = new IntersectionObserver(
+      (entries) => {
+        let i = 0
+        for (const e of entries) {
+          if (!e.isIntersecting) continue
+          e.target.style.transitionDelay = `${Math.min(i++, 8) * 90}ms`
+          e.target.classList.add('rv-in')
+          io.unobserve(e.target)
+        }
+      },
+      { rootMargin: '0px 0px -8% 0px', threshold: 0 },
+    )
+    els.forEach((el) => io.observe(el))
+    return () => {
+      io.disconnect()
+      els.forEach((el) => el.classList.remove('rv', 'rv-in'))
+    }
+  }, deps)
 }
-
-export { useRef }

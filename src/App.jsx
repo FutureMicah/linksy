@@ -1,9 +1,8 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
-import InstallPrompt from './components/InstallPrompt.jsx'
-import { initSmoothScroll, getLenis } from './lib/lenis.js'
-import { ScrollTrigger } from './lib/motion.js'
+import { useDeferredReady } from './lib/idle.js'
+import { scroll } from './lib/scroll-state.js'
 
 // route-level code splitting: every page, including the storefront home, is its own chunk
 const Home = lazy(() => import('./pages/Home.jsx'))
@@ -13,6 +12,7 @@ const Checkout = lazy(() => import('./pages/Checkout.jsx'))
 const Order = lazy(() => import('./pages/Order.jsx'))
 const Admin = lazy(() => import('./pages/Admin.jsx'))
 const NotFound = lazy(() => import('./pages/NotFound.jsx'))
+const InstallPrompt = lazy(() => import('./components/InstallPrompt.jsx'))
 
 // mounted inside the Suspense boundary, so it only mounts once the route chunk has loaded and committed.
 // it signals main.jsx (which removes the splash after a paint) via a window event.
@@ -28,19 +28,19 @@ function ReadyBeacon() {
 
 export default function App() {
   const { pathname } = useLocation()
+  // decorative stage (smooth scroll, install sheet): starts after first paint, never blocks the splash
+  const decor = useDeferredReady()
 
   useEffect(() => {
-    initSmoothScroll()
-    return () => {}
-  }, [])
+    if (!decor) return undefined
+    let cancelled = false
+    import('./lib/lenis.js').then((m) => { if (!cancelled) m.initSmoothScroll() })
+    return () => { cancelled = true }
+  }, [decor])
 
-  // re-measure scroll triggers after each route swap
+  // re-measure after each route swap
   useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      ScrollTrigger.refresh()
-      getLenis()?.resize()
-    })
-    return () => cancelAnimationFrame(id)
+    scroll.lenis?.resize()
   }, [pathname])
 
   return (
@@ -58,7 +58,11 @@ export default function App() {
         </Route>
       </Routes>
       <ReadyBeacon />
-      <InstallPrompt />
+      {decor && (
+        <Suspense fallback={null}>
+          <InstallPrompt />
+        </Suspense>
+      )}
     </Suspense>
   )
 }
