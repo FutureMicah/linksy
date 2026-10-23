@@ -8,6 +8,8 @@ import { ScrollProgress, CursorGlow, useRipple, useScrollFx } from './fx.jsx'
 import Aurora from './Aurora.jsx'
 import Spider from './Spider.jsx'
 import Countdown from './Countdown.jsx'
+import BackToTop from './BackToTop.jsx'
+import HeaderSearch from './HeaderSearch.jsx'
 
 const linkCls = ({ isActive }) =>
   `relative transition-colors ${isActive ? 'text-lime' : 'text-muted hover:text-bone'}`
@@ -61,17 +63,11 @@ export default function Layout() {
     { scope: headerRef },
   )
 
-  // route change: reset scroll, then a short page-in transition
+  // route change: reset scroll. The page crossfade is the keyed .route-fade wrapper below (CSS only).
   useEffect(() => {
     const lenis = getLenis()
     if (lenis) lenis.scrollTo(0, { immediate: true })
     else window.scrollTo(0, 0)
-    if (!mainRef.current || reducedMotion()) return
-    gsap.fromTo(
-      mainRef.current,
-      { opacity: 0, y: 26 },
-      { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', clearProps: 'opacity,transform' },
-    )
   }, [pathname])
 
   // cart badge bounce
@@ -118,6 +114,7 @@ export default function Layout() {
           </nav>
 
           <div data-nav className="flex items-center gap-2">
+            <HeaderSearch />
             <div className="flex border border-line text-[11px] font-display">
               {['NGN', 'USD'].map((c) => (
                 <button
@@ -161,9 +158,12 @@ export default function Layout() {
 
       <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10">
         <Suspense fallback={<div className="min-h-[50vh]" />}>
-          <Outlet />
+          <div key={pathname} className="route-fade">
+            <Outlet />
+          </div>
         </Suspense>
       </main>
+      <BackToTop />
 
       <footer className="relative mt-10 border-t border-line">
         <div className="hairline grad-stream absolute inset-x-0 -top-px" />

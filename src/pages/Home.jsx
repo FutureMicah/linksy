@@ -6,6 +6,7 @@ import Cover from '../components/Cover.jsx'
 import ArtStrip from '../components/ArtStrip.jsx'
 import Hero from '../components/Hero.jsx'
 import Marquee from '../components/Marquee.jsx'
+import TrustStrip from '../components/TrustStrip.jsx'
 import FeaturedCarousel from '../components/FeaturedCarousel.jsx'
 import { CATEGORIES, categoryById } from '../config.js'
 import { useReveal, reducedMotion } from '../lib/motion.js'
@@ -96,6 +97,7 @@ export default function Home() {
       {!activeCat && (
         <>
           <Hero stats={stats} />
+          <TrustStrip />
           <section data-reveal>
             <FeaturedCarousel />
           </section>

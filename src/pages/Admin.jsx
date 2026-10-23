@@ -4,6 +4,7 @@ import { formatPrice, stockLabel } from '../lib/format.js'
 import { CATEGORIES, CONFIG } from '../config.js'
 import { useReveal } from '../lib/motion.js'
 import { escrowFor } from '../store/useStore.js'
+import DealBadge from '../components/DealBadge.jsx'
 import { ESCROW_LABEL, isInspectionOver, formatRemaining } from '../lib/escrow.js'
 
 const SESSION_KEY = 'linksy-admin-ok'
@@ -14,6 +15,7 @@ const EMPTY = {
   category: 'gaming',
   brand: '',
   price_ngn: 0,
+  was_ngn: 0,
   stock: 1,
   status: 'active',
   featured: false,
@@ -146,6 +148,7 @@ function Listings() {
       ...rest,
       specs,
       price_ngn: Number(rest.price_ngn) || 0,
+      was_ngn: Number(rest.was_ngn) || 0,
       stock: Math.max(0, Number(rest.stock) || 0),
     })
     setEditing(null)
@@ -191,7 +194,7 @@ function Listings() {
                     <div className="text-[11px] text-muted">{l.id}</div>
                   </td>
                   <td className="p-3 capitalize">{l.category}</td>
-                  <td className="p-3">{formatPrice(l.price_ngn, 'NGN')}</td>
+                  <td className="p-3"><div>{formatPrice(l.price_ngn, 'NGN')}</div><DealBadge now={l.price_ngn} was={l.was_ngn} className="mt-1" /></td>
                   <td className="p-3"><span className={toneText[st.tone]}>{st.text}</span></td>
                   <td className="p-3">
                     <div className="flex gap-1.5 justify-end flex-wrap">
@@ -254,6 +257,10 @@ function ListingForm({ initial, onSave, onCancel }) {
       <div>
         <label className="label">Price (₦)</label>
         <input className="input" type="number" min="0" value={f.price_ngn} onChange={set('price_ngn')} />
+      </div>
+      <div>
+        <label className="label">Was price (₦, optional, shows a deal badge)</label>
+        <input className="input" type="number" min="0" value={f.was_ngn || ''} onChange={set('was_ngn')} />
       </div>
       <div>
         <label className="label">Stock</label>
