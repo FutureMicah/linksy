@@ -45,6 +45,7 @@ export const SEED_LISTINGS = [
     status: 'active',
     featured: false,
     cover: '🪖',
+    image: '/img/pubg-mobile-conqueror.webp',
     description:
       'Conqueror tier account with two gun skins and a clean match history. Ideal for ranked grinders who want a fast start.',
     specs: { Platform: 'Android', Rank: 'Conqueror', 'Gun Skins': '2', 'UC Spent': '1,200', Region: 'Africa' },
@@ -61,6 +62,7 @@ export const SEED_LISTINGS = [
     status: 'active',
     featured: false,
     cover: '⚽',
+    image: '/img/ea-fc-26-ultimate-team-account.webp',
     description:
       'FC 26 Ultimate Team account with a squad that has over 80 OVR in the starting XI and roughly 3.2M coins. Sold as-is with the original owner email removed.',
     specs: { Platform: 'PS5 (PSN linked)', 'Squad Rating': '84 OVR', Coins: '3.2M', 'Packs Opened': '410', Divisions: 'Div 4' },
@@ -127,6 +129,7 @@ export const SEED_LISTINGS = [
     status: 'active',
     featured: true,
     cover: '🎵',
+    image: '/img/tiktok-50k-fashion-niche.webp',
     description:
       'TikTok account with 50K followers in the fashion and styling niche. Average video views around 18K. Comes with the original email.',
     specs: { Platform: 'TikTok', Followers: '50,000', Likes: '640K', Niche: 'Fashion', 'Account Age': '2021' },
@@ -143,6 +146,7 @@ export const SEED_LISTINGS = [
     status: 'active',
     featured: false,
     cover: '🐦',
+    image: '/img/x-twitter-2016-aged.webp',
     description: 'Aged X account created in 2016 with around 3K followers. Clean history, email verified.',
     specs: { Platform: 'X', Followers: '3,100', 'Account Age': '2016', Email: 'Verified', '2FA': 'Not enabled' },
     created_at: '2026-10-15T09:00:00Z',
@@ -271,6 +275,7 @@ export const SEED_LISTINGS = [
     status: 'sold',
     featured: false,
     cover: '🎯',
+    image: '/img/valorant-account-sold-example.webp',
     description: 'Radiant Valorant account. Already sold, shown here to demonstrate sold-out state.',
     specs: { Platform: 'PC', Rank: 'Radiant', Skins: '40' },
     created_at: '2026-10-05T15:00:00Z',
