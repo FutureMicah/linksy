@@ -10,6 +10,22 @@ import Spider from './Spider.jsx'
 const linkCls = ({ isActive }) =>
   `relative transition-colors ${isActive ? 'text-lime' : 'text-muted hover:text-bone'}`
 
+function LogoMark({ className = '' }) {
+  return (
+    <svg viewBox="0 0 32 32" className={className} aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="lsg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f0d9a4" />
+          <stop offset="1" stopColor="#d9b97a" />
+        </linearGradient>
+      </defs>
+      <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#lsg)" />
+      <rect x="1" y="1" width="30" height="15" rx="9" fill="#ffffff" fillOpacity="0.22" />
+      <path d="M11 7h4.2v12.6H23V24H11z" fill="#0b0d0c" />
+    </svg>
+  )
+}
+
 export default function Layout() {
   const { pathname } = useLocation()
   const cartCount = useStore((s) => s.cart.reduce((n, c) => n + c.qty, 0))
@@ -71,9 +87,7 @@ export default function Layout() {
         <div className="grad-stream absolute inset-x-0 top-0 h-[2px]" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-3">
           <Link data-nav to="/" className="flex items-center gap-2 shrink-0">
-            <span className="grid place-items-center w-8 h-8 bg-lime text-ink font-display text-sm shadow-[0_0_24px_rgba(217,185,122,0.55)]">
-              LS
-            </span>
+            <LogoMark className="w-8 h-8 shrink-0" />
             <span className="font-display text-xl md:text-2xl leading-none tracking-wide">
               LINK<span className="text-lime">SY</span>
             </span>
