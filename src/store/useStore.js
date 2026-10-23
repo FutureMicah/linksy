@@ -390,8 +390,8 @@ export const useStore = create(
       },
     }),
     {
-      name: 'linksy-store-v1',
-      version: 1,
+      name: 'linksy-store-v1', // keep the key so saved orders and listings survive
+      version: 2,
       // merge new seed fields (e.g. product images) into previously saved listings
       migrate: (state, version) => {
         if (state?.listings?.length && version < 1) {
@@ -399,6 +399,14 @@ export const useStore = create(
             const seed = SEED_LISTINGS.find((s) => s.id === l.id)
             return seed ? { ...l, image: seed.image } : l
           })
+        }
+        // v2: browsers saved before the admin team existed (or with a store missing the owner row)
+        // get the owner seed back, so the default passcode login works on first visit.
+        if (version < 2) {
+          const list = Array.isArray(state?.adminUsers) ? state.adminUsers : []
+          const hasOwner = list.some((u) => String(u.email || '').trim().toLowerCase() === OWNER_EMAIL)
+          state.adminUsers = hasOwner ? list : [ownerSeed(), ...list]
+          if (!state.siteSettings) state.siteSettings = DEFAULT_SETTINGS
         }
         return state
       },
