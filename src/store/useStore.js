@@ -3,6 +3,19 @@ import { persist } from 'zustand/middleware'
 import { SEED_LISTINGS } from '../data/seed.js'
 import { makeRef, slugify } from '../lib/format.js'
 import { INSPECTION_MS } from '../lib/escrow.js'
+import { OWNER_EMAIL, INVITE_TTL_MS, can, invitableRoles, hashPasscode, decodeInvite, encodeInvite, DEFAULT_PASSCODE } from '../lib/admin.js'
+
+export const DEFAULT_SETTINGS = {
+  logo: '', // dataURL, rendered in the header when set
+  heroLines: ['Gaming', 'accounts.', 'Gift cards.'],
+  heroSub: 'Socials and gift cards too. Pay the exact amount by bank transfer in naira, then get your delivery in the chat once we confirm.',
+  trustItems: ['Escrow protected', 'Verified sellers', 'Bank transfer', 'Funds held until you confirm', 'Delivered in chat', '24h inspection window'],
+  countdownOn: true,
+  floatingArtOn: true,
+  spiderEnabled: true, // site-wide master for the spider (footer toggle still works per visitor)
+}
+
+const ownerSeed = () => ({ id: 'owner', name: 'Owner', email: OWNER_EMAIL, role: 'owner', passcodeHash: null, mustChangePasscode: true })
 
 // Listing status: 'active' | 'sold' | 'hidden'
 // Order status: 'awaiting_transfer' | 'paid' | 'delivered' | 'cancelled'
@@ -26,6 +39,142 @@ export const useStore = create(
       reviews: [], // [{ id, order_id, listing_ids, rating, comment, author, created_at }]
 
       setCurrency: (currency) => set({ currency }),
+
+      // ---- admin auth, roles, invites ----
+      adminUsers: [ownerSeed()], // [{ id, name, email, role, passcodeHash, mustChangePasscode }]
+      sessionUserId: null, // admin session, kept in localStorage
+      invites: [], // [{ nonce, email, role, created_at, expires_at, status: 'pending'|'used'|'revoked', used_by }]
+      usedInviteNonces: [], // redeemed invite codes seen by this browser
+      siteSettings: DEFAULT_SETTINGS,
+
+      sessionUser: () => get().adminUsers.find((u) => u.id === get().sessionUserId) || null,
+      canDo: (cap) => {
+        const me = get().sessionUser()
+        return !!me && can(me.role, cap)
+      },
+
+      loginAdmin: async (email, passcode) => {
+        const addr = String(email || '').trim().toLowerCase()
+        const user = get().adminUsers.find((u) => u.email.toLowerCase() === addr)
+        if (!user) return { ok: false, error: 'No admin account with that email.' }
+        let valid
+        if (user.passcodeHash) valid = (await hashPasscode(user.email, passcode)) === user.passcodeHash
+        else valid = passcode === DEFAULT_PASSCODE // seeded account, never changed yet
+        if (!valid) return { ok: false, error: 'Wrong passcode.' }
+        set({ sessionUserId: user.id })
+        return { ok: true, user }
+      },
+      logoutAdmin: () => set({ sessionUserId: null }),
+
+      changeOwnPasscode: async (passcode) => {
+        const me = get().sessionUser()
+        if (!me) return { ok: false, error: 'Log in first.' }
+        if (!passcode || passcode.length < 6) return { ok: false, error: 'Use at least 6 characters.' }
+        if (passcode === DEFAULT_PASSCODE) return { ok: false, error: 'Pick a passcode other than the default.' }
+        const passcodeHash = await hashPasscode(me.email, passcode)
+        set({
+          adminUsers: get().adminUsers.map((u) => (u.id === me.id ? { ...u, passcodeHash, mustChangePasscode: false } : u)),
+        })
+        return { ok: true }
+      },
+
+      // Owner and manager only. Returns the code and link to share.
+      createInvite: (email, role) => {
+        const me = get().sessionUser()
+        if (!me || !can(me.role, 'users.invite')) return { ok: false, error: 'You cannot invite admins.' }
+        const addr = String(email || '').trim().toLowerCase()
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) return { ok: false, error: 'Enter a valid email.' }
+        if (!invitableRoles(me.role).includes(role)) return { ok: false, error: 'Your role cannot grant that role.' }
+        if (get().adminUsers.some((u) => u.email.toLowerCase() === addr)) return { ok: false, error: 'That person is already an admin.' }
+        const now = Date.now()
+        const nonce = Math.random().toString(36).slice(2, 10) + now.toString(36)
+        const expires = now + INVITE_TTL_MS
+        const code = encodeInvite({ n: nonce, e: addr, r: role, x: expires })
+        set({
+          invites: [{ nonce, email: addr, role, created_at: new Date(now).toISOString(), expires_at: new Date(expires).toISOString(), status: 'pending', used_by: null }, ...get().invites],
+        })
+        return { ok: true, code }
+      },
+
+      revokeInvite: (nonce) => {
+        const me = get().sessionUser()
+        if (!me || !can(me.role, 'users.invite')) return false
+        set({ invites: get().invites.map((i) => (i.nonce === nonce && i.status === 'pending' ? { ...i, status: 'revoked' } : i)) })
+        return true
+      },
+
+      // Join screen: the code binds the role and email. Single use, 7 day expiry.
+      redeemInvite: async (code, name, passcode) => {
+        const p = decodeInvite(code)
+        if (!p) return { ok: false, error: 'This invite link is broken.' }
+        if (p.x && Date.now() > p.x) return { ok: false, error: 'This invite expired (links last 7 days).' }
+        if (get().usedInviteNonces.includes(p.n) || get().invites.some((i) => i.nonce === p.n && i.status === 'used')) {
+          return { ok: false, error: 'This invite was already used.' }
+        }
+        if (get().invites.some((i) => i.nonce === p.n && i.status === 'revoked')) return { ok: false, error: 'This invite was cancelled.' }
+        const cleanName = String(name || '').trim()
+        if (!cleanName) return { ok: false, error: 'Enter your name.' }
+        if (!passcode || passcode.length < 6) return { ok: false, error: 'Passcode needs at least 6 characters.' }
+        if (passcode === DEFAULT_PASSCODE) return { ok: false, error: 'Pick a passcode other than the default.' }
+        if (get().adminUsers.some((u) => u.email.toLowerCase() === p.e)) return { ok: false, error: 'That email already has an admin account here.' }
+        const id = 'adm-' + Math.random().toString(36).slice(2, 8)
+        const user = { id, name: cleanName, email: p.e, role: p.r, passcodeHash: await hashPasscode(p.e, passcode), mustChangePasscode: false }
+        const joinCode = encodeInvite({ id, nm: cleanName, e: p.e, r: p.r, h: user.passcodeHash, n: p.n })
+        set({
+          adminUsers: [...get().adminUsers, user],
+          sessionUserId: id,
+          usedInviteNonces: [...get().usedInviteNonces, p.n],
+          invites: get().invites.map((i) => (i.nonce === p.n ? { ...i, status: 'used', used_by: id } : i)),
+        })
+        return { ok: true, user, joinCode }
+      },
+
+      // Owner/manager pastes the join code the new admin got back, adding them to this browser's team list.
+      importJoin: (code) => {
+        const me = get().sessionUser()
+        if (!me || !can(me.role, 'users.invite')) return { ok: false, error: 'You cannot add admins.' }
+        const p = decodeInvite(code)
+        if (!p || !p.id || !p.h || !p.n) return { ok: false, error: 'That join code is not valid.' }
+        if (get().adminUsers.some((u) => u.id === p.id || u.email.toLowerCase() === String(p.e).toLowerCase())) {
+          return { ok: false, error: 'That admin is already on the team.' }
+        }
+        const invite = get().invites.find((i) => i.nonce === p.n)
+        if (invite && invite.status === 'revoked') return { ok: false, error: 'That invite was cancelled.' }
+        if (invite && invite.status === 'used') return { ok: false, error: 'That invite was already used.' }
+        if (!invitableRoles(me.role).includes(p.r)) return { ok: false, error: 'Your role cannot add that role.' }
+        const user = { id: p.id, name: p.nm, email: p.e, role: p.r, passcodeHash: p.h, mustChangePasscode: false }
+        set({
+          adminUsers: [...get().adminUsers, user],
+          usedInviteNonces: [...get().usedInviteNonces, p.n],
+          invites: get().invites.map((i) => (i.nonce === p.n ? { ...i, status: 'used', used_by: p.id } : i)),
+        })
+        return { ok: true, user }
+      },
+
+      // Owner only. The owner role cannot be changed or removed.
+      setAdminRole: (id, role) => {
+        const me = get().sessionUser()
+        if (!me || !can(me.role, 'users.manage')) return false
+        const target = get().adminUsers.find((u) => u.id === id)
+        if (!target || target.role === 'owner' || role === 'owner' || !['manager', 'editor', 'viewer'].includes(role)) return false
+        set({ adminUsers: get().adminUsers.map((u) => (u.id === id ? { ...u, role } : u)) })
+        return true
+      },
+
+      removeAdmin: (id) => {
+        const me = get().sessionUser()
+        if (!me || !can(me.role, 'users.manage')) return false
+        const target = get().adminUsers.find((u) => u.id === id)
+        if (!target || target.role === 'owner') return false
+        set({ adminUsers: get().adminUsers.filter((u) => u.id !== id) })
+        return true
+      },
+
+      updateSettings: (patch) => {
+        if (!get().canDo('settings.edit')) return false
+        set({ siteSettings: { ...get().siteSettings, ...patch } })
+        return true
+      },
 
       // ---- cart ----
       addToCart: (id) => {
@@ -53,6 +202,7 @@ export const useStore = create(
 
       // ---- listings (admin) ----
       upsertListing: (data) => {
+        if (!get().canDo('listings.edit')) return ''
         const { listings } = get()
         if (data.id && listings.some((l) => l.id === data.id)) {
           set({ listings: listings.map((l) => (l.id === data.id ? { ...l, ...data } : l)) })
@@ -72,14 +222,16 @@ export const useStore = create(
         set({ listings: [item, ...listings] })
         return id
       },
-      deleteListing: (id) => set({ listings: get().listings.filter((l) => l.id !== id) }),
-      markSold: (id) =>
-        set({
+      deleteListing: (id) => {
+        if (!get().canDo('listings.edit')) return
+        set({ listings: get().listings.filter((l) => l.id !== id) })
+      },
+      markSold: (id) => get().canDo('listings.edit') && set({
           listings: get().listings.map((l) => (l.id === id ? { ...l, status: 'sold', stock: 0 } : l)),
           cart: get().cart.filter((c) => c.id !== id),
         }),
       restock: (id, stock = 1) =>
-        set({
+        get().canDo('listings.edit') && set({
           listings: get().listings.map((l) => (l.id === id ? { ...l, status: 'active', stock } : l)),
         }),
 
@@ -112,6 +264,7 @@ export const useStore = create(
         return order
       },
       setOrderStatus: (id, status) => {
+        if (!get().canDo('orders.edit')) return
         const order = get().orders.find((o) => o.id === id)
         if (!order) return
         let listings = get().listings
@@ -142,6 +295,7 @@ export const useStore = create(
       // ---- escrow ----
       // Seller/admin hands over the account or code. Starts the 24h inspection window.
       markDelivered: (id) => {
+        if (!get().canDo('orders.edit')) return false
         const order = get().orders.find((o) => o.id === id)
         if (!order) return false
         const esc = escrowFor(order)
@@ -159,6 +313,7 @@ export const useStore = create(
 
       // Buyer confirms delivery, or admin releases. Blocked while a dispute is open.
       releaseFunds: (id) => {
+        if (!get().canDo('orders.edit')) return false
         const order = get().orders.find((o) => o.id === id)
         if (!order) return false
         const esc = escrowFor(order)
@@ -186,6 +341,7 @@ export const useStore = create(
 
       // Admin resolves a dispute: release funds to the seller, or refund the buyer.
       resolveDispute: (id, outcome, note = '') => {
+        if (!get().canDo('orders.edit')) return false
         const order = get().orders.find((o) => o.id === id)
         if (!order) return false
         const esc = escrowFor(order)
@@ -208,6 +364,13 @@ export const useStore = create(
       },
 
       // ---- reviews ----
+      deleteReview: (id) => {
+        const me = get().sessionUser()
+        if (!me || !can(me.role, 'reviews.edit')) return false
+        set({ reviews: get().reviews.filter((r) => r.id !== id) })
+        return true
+      },
+
       submitReview: (orderId, rating, comment) => {
         const order = get().orders.find((o) => o.id === orderId)
         if (!order) return false

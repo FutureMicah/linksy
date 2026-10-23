@@ -1,7 +1,8 @@
 // Slow marquee of trust signals under the hero. Pauses on hover/focus; CSS only.
-const ITEMS = ['Escrow protected', 'Verified sellers', 'Bank transfer', 'Funds held until you confirm', 'Delivered in chat', '24h inspection window']
+const DEFAULT_ITEMS = ['Escrow protected', 'Verified sellers', 'Bank transfer', 'Funds held until you confirm', 'Delivered in chat', '24h inspection window']
 
-export default function TrustStrip() {
+export default function TrustStrip({ items }) {
+  const ITEMS = items?.length ? items : DEFAULT_ITEMS
   const row = [...ITEMS, ...ITEMS]
   return (
     <div className="trust-strip marquee relative overflow-hidden border-y border-line bg-white/60 py-3" aria-label="trust signals">

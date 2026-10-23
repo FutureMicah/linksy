@@ -28,6 +28,7 @@ const SORTS = {
 export default function Home() {
   const { category } = useParams()
   const listings = useStore((s) => s.listings)
+  const siteSettings = useStore((s) => s.siteSettings)
   const [params, setParams] = useSearchParams()
   const [q, setQ] = useState(params.get('q') || '')
   const [inStockOnly, setInStockOnly] = useState(false)
@@ -97,8 +98,8 @@ export default function Home() {
     <div ref={scope} className="flex flex-col gap-8 md:gap-10">
       {!activeCat && (
         <>
-          <Hero stats={stats} />
-          <TrustStrip />
+          <Hero stats={stats} lines={siteSettings.heroLines} sub={siteSettings.heroSub} />
+          <TrustStrip items={siteSettings.trustItems} />
           <section data-reveal>
             <FeaturedCarousel />
           </section>

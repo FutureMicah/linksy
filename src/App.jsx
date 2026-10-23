@@ -11,6 +11,7 @@ const Cart = lazy(() => import('./pages/Cart.jsx'))
 const Checkout = lazy(() => import('./pages/Checkout.jsx'))
 const Order = lazy(() => import('./pages/Order.jsx'))
 const Admin = lazy(() => import('./pages/Admin.jsx'))
+const JoinScreen = lazy(() => import('./pages/Admin.jsx').then((m) => ({ default: m.JoinScreen })))
 const NotFound = lazy(() => import('./pages/NotFound.jsx'))
 const InstallPrompt = lazy(() => import('./components/InstallPrompt.jsx'))
 
@@ -54,6 +55,7 @@ export default function App() {
           <Route path="checkout" element={<Checkout />} />
           <Route path="order/:ref" element={<Order />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="admin/invite" element={<JoinScreen />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

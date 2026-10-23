@@ -40,6 +40,7 @@ export default function Layout() {
   const setCurrency = useStore((s) => s.setCurrency)
   const spiderOn = useStore((s) => s.spiderOn)
   const setSpiderOn = useStore((s) => s.setSpiderOn)
+  const siteSettings = useStore((s) => s.siteSettings)
 
   const mainRef = useRef(null)
   useRipple()
@@ -81,7 +82,7 @@ export default function Layout() {
   return (
     <div className="grain min-h-screen flex flex-col">
       <div className="ambient" />
-      {decor && (
+      {decor && siteSettings.floatingArtOn && (
         <Suspense fallback={null}>
           <FloatingArt key={pathname} />
         </Suspense>
@@ -93,7 +94,7 @@ export default function Layout() {
         </Suspense>
       )}
       {decor && <CursorGlow />}
-      {decor && spiderOn && !reducedMotion() && (
+      {decor && spiderOn && siteSettings.spiderEnabled && !reducedMotion() && (
         <Suspense fallback={null}>
           <Spider />
         </Suspense>
@@ -103,10 +104,16 @@ export default function Layout() {
         <div className="grad-stream absolute inset-x-0 top-0 h-[2px]" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-3">
           <Link data-nav to="/" className="flex items-center gap-2 shrink-0">
-            <LogoMark className="w-8 h-8 shrink-0" />
-            <span className="font-display text-xl md:text-2xl leading-none tracking-wide">
-              LINK<span className="text-lime-ink">SY</span>
-            </span>
+            {siteSettings.logo ? (
+              <img src={siteSettings.logo} alt="Linksy" className="h-8 md:h-9 w-auto max-w-[160px] object-contain shrink-0" />
+            ) : (
+              <>
+                <LogoMark className="w-8 h-8 shrink-0" />
+                <span className="font-display text-xl md:text-2xl leading-none tracking-wide">
+                  LINK<span className="text-lime-ink">SY</span>
+                </span>
+              </>
+            )}
           </Link>
 
           <nav data-nav className="hidden md:flex items-center gap-7 font-display text-sm">
@@ -155,7 +162,7 @@ export default function Layout() {
         </div>
       </header>
 
-      {decor && (
+      {decor && siteSettings.countdownOn && (
         <Suspense fallback={null}>
           <Countdown />
         </Suspense>
