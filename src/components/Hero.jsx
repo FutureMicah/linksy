@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap, useGSAP, reducedMotion, finePointer } from '../lib/motion.js'
 import { CATEGORIES } from '../config.js'
@@ -7,8 +7,17 @@ import Cover from './Cover.jsx'
 
 const ORB_SPEED = [0.3, 0.55, 0.18]
 
+// the glass panel rises in 3D only on the first mount of this page load (not on every category visit)
+let heroSeen = false
+
+
 export default function Hero({ stats }) {
   const ref = useRef(null)
+  const [enter] = useState(() => {
+    const first = !heroSeen
+    heroSeen = true
+    return first
+  })
 
   useGSAP(
     () => {
@@ -58,7 +67,7 @@ export default function Hero({ stats }) {
   }
 
   return (
-    <section ref={ref} onPointerMove={onMove} className="relative overflow-hidden border border-line bg-panel/40 md:rounded-sm">
+    <section ref={ref} onPointerMove={onMove} className={`relative overflow-hidden border border-line bg-panel/40 md:rounded-sm ${enter ? 'hero-enter' : ''}`}>
       <div className="spot pointer-events-none absolute inset-0" />
       <div className="light-leak" aria-hidden="true" />
       <div className="absolute -top-24 -right-24 h-80 w-80 rounded-full bg-lime/10 blur-3xl pointer-events-none" />

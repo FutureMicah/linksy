@@ -1,0 +1,56 @@
+/* ---------- 3D pass: card tilt, carousel depth, hero entrance, button press ----------
+   transform and opacity only. Reduced motion turns every one of these off. */
+
+/* 1) product card tilt. ProductCard writes --tx / --ty (-1..1) and --amp; CSS turns them into angles.
+   Inner layers (.tilt-layer) move by pointer offset * --sx/--sy and lift by --z, so image, title and
+   price separate at different depths. Note: .tile has overflow:hidden, which flattens real translateZ
+   on descendants, so the depth is mostly the offset parallax; translateZ adds a little extra lift. */
+.tilt {
+  --amp: 8deg;
+  transform: perspective(900px) rotateX(calc(var(--ty, 0) * var(--amp) * -1)) rotateY(calc(var(--tx, 0) * var(--amp)));
+  transition: transform 0.45s var(--ease-out-expo), translate 0.5s var(--ease-out-expo), scale 0.5s var(--ease-out-expo), box-shadow 0.5s var(--ease-out-expo);
+  will-change: transform;
+}
+.tilt-layer {
+  transform: translate3d(calc(var(--tx, 0) * var(--sx, 0px) * -1), calc(var(--ty, 0) * var(--sy, 0px) * -1), var(--z, 0px));
+  transition: transform 0.45s var(--ease-out-expo);
+  will-change: transform;
+}
+
+/* 2) featured carousel: the incoming slide swings in on Y (set --rot from the slide direction) */
+.slide-3d { transform-origin: 50% 50%; }
+.slide-3d.depth-in {
+  animation: slide-depth-in 0.8s var(--ease-out-expo) both;
+}
+@keyframes slide-depth-in {
+  0% { transform: perspective(1200px) rotateY(var(--rot, 10deg)) scale(0.96); opacity: 0.4; }
+  100% { transform: perspective(1200px) rotateY(0deg) scale(1); opacity: 1; }
+}
+
+/* 3) hero glass panel: rises and settles with a slight X rotation, once per page load */
+.hero-enter {
+  transform-origin: 50% 100%;
+  animation: hero-rise 1.15s var(--ease-out-expo) both;
+}
+@keyframes hero-rise {
+  0% { transform: perspective(1400px) translate3d(0, 70px, 0) rotateX(14deg) scale(0.96); opacity: 0; }
+  60% { opacity: 1; }
+  100% { transform: perspective(1400px) translate3d(0, 0, 0) rotateX(0deg) scale(1); opacity: 1; }
+}
+
+/* 4) buttons: press down in 3D (tilt + sink + scale) and the shadow goes shallow */
+.btn, .btn-ghost, .btn-danger {
+  transition: transform 0.2s var(--ease-out-expo), box-shadow 0.3s var(--ease-out-expo), border-color 0.25s, background-color 0.25s, color 0.25s, opacity 0.2s;
+}
+.btn:active, .btn-ghost:active, .btn-danger:active {
+  scale: none;
+  transform: perspective(360px) translate3d(0, 3px, -6px) rotateX(10deg) scale(0.955);
+  transition-duration: 0.12s;
+  box-shadow: 0 2px 6px -4px rgba(14, 124, 134, 0.6), inset 0 3px 6px -2px rgba(0, 0, 0, 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt, .tilt-layer { transform: none !important; transition: none !important; }
+  .slide-3d.depth-in, .hero-enter { animation: none !important; }
+  .btn:active, .btn-ghost:active, .btn-danger:active { transform: none !important; }
+}

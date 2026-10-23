@@ -1,12 +1,12 @@
 import PlatformBadge from './PlatformBadge.jsx'
-import { memo, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { formatPrice, stockLabel } from '../lib/format.js'
 import { categoryById } from '../config.js'
 import Cover from './Cover.jsx'
 import VerifiedSeller from './VerifiedSeller.jsx'
-import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
+import { gsap, reducedMotion } from '../lib/motion.js'
 
 const toneClass = {
   lime: 'text-lime border-lime/40 bg-lime/5',
@@ -23,57 +23,69 @@ function ProductCard({ listing }) {
   const ref = useRef(null)
   const btnRef = useRef(null)
 
-  // tilt toward the pointer: mouse on hover, finger while pressed on touch (smaller amplitude)
-  useGSAP(
-    () => {
-      const el = ref.current
-      if (!el || reducedMotion()) return
-      const rx = gsap.quickTo(el, 'rotationX', { duration: 0.5, ease: 'power3.out' })
-      const ry = gsap.quickTo(el, 'rotationY', { duration: 0.5, ease: 'power3.out' })
-      let touching = false
-      const aim = (e, amp) => {
-        const r = el.getBoundingClientRect()
-        ry(((e.clientX - r.left) / r.width - 0.5) * amp)
-        rx(-((e.clientY - r.top) / r.height - 0.5) * amp)
+  // 3D tilt toward the pointer (mouse) or the finger (touch). Plain JS, writes two CSS vars,
+  // CSS does the transform. Inner layers read the same vars at different translateZ depths.
+  useEffect(() => {
+    const el = ref.current
+    if (!el || reducedMotion()) return
+    let raf = 0
+    let touching = false
+    let target = { x: 0, y: 0 }
+    const flush = () => {
+      raf = 0
+      el.style.setProperty('--tx', target.x.toFixed(3))
+      el.style.setProperty('--ty', target.y.toFixed(3))
+    }
+    const queue = () => {
+      if (!raf) raf = requestAnimationFrame(flush)
+    }
+    const aim = (e) => {
+      const r = el.getBoundingClientRect()
+      target = {
+        x: ((e.clientX - r.left) / r.width - 0.5) * 2,
+        y: ((e.clientY - r.top) / r.height - 0.5) * 2,
       }
-      const move = (e) => {
-        if (e.pointerType === 'mouse') aim(e, 8)
-        else if (touching) aim(e, 5)
-      }
-      const down = (e) => {
-        if (e.pointerType !== 'mouse') {
-          touching = true
-          aim(e, 5)
-          el.classList.add('swept')
-        }
-      }
-      const up = () => {
-        if (!touching) return
-        touching = false
-        rx(0)
-        ry(0)
-      }
-      const leave = (e) => {
-        if (e.pointerType === 'mouse') {
-          rx(0)
-          ry(0)
-        }
-      }
-      el.addEventListener('pointermove', move)
-      el.addEventListener('pointerdown', down)
-      el.addEventListener('pointerup', up)
-      el.addEventListener('pointercancel', up)
-      el.addEventListener('pointerleave', leave)
-      return () => {
-        el.removeEventListener('pointermove', move)
-        el.removeEventListener('pointerdown', down)
-        el.removeEventListener('pointerup', up)
-        el.removeEventListener('pointercancel', up)
-        el.removeEventListener('pointerleave', leave)
-      }
-    },
-    { scope: ref },
-  )
+      queue()
+    }
+    const reset = () => {
+      target = { x: 0, y: 0 }
+      queue()
+    }
+    const move = (e) => {
+      if (e.pointerType === 'mouse') {
+        el.style.setProperty('--amp', '8deg')
+        aim(e)
+      } else if (touching) aim(e)
+    }
+    const down = (e) => {
+      if (e.pointerType === 'mouse') return
+      touching = true
+      el.style.setProperty('--amp', '5deg')
+      el.classList.add('swept')
+      aim(e)
+    }
+    const up = (e) => {
+      if (e.pointerType === 'mouse' || !touching) return
+      touching = false
+      reset()
+    }
+    const leave = (e) => {
+      if (e.pointerType === 'mouse') reset()
+    }
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerdown', down)
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', up)
+    el.addEventListener('pointerleave', leave)
+    return () => {
+      cancelAnimationFrame(raf)
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerdown', down)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', up)
+      el.removeEventListener('pointerleave', leave)
+    }
+  }, [])
 
   const onAdd = () => {
     const ok = addToCart(listing.id)
@@ -87,14 +99,16 @@ function ProductCard({ listing }) {
       <span className="tile-bloom" aria-hidden="true" />
       <div
         ref={ref}
-        style={{ transformPerspective: 900 }}
+        style={{ perspective: '900px' }}
         data-ripple
-        className="tile card sheen flex flex-col overflow-hidden group"
+        className="tile tilt card sheen flex flex-col overflow-hidden group"
       >
         <Link to={`/product/${listing.id}`} className="block">
           <div className="tile-media relative h-40 md:h-48">
             <div data-drift="0.12" className="h-full w-full scale-[1.12]">
-              <Cover listing={listing} className="h-full w-full" />
+              <div className="tilt-layer h-full w-full" style={{ '--z': '18px', '--sx': '-7px', '--sy': '-5px' }}>
+                <Cover listing={listing} className="h-full w-full" />
+              </div>
             </div>
             <span className="absolute bottom-2.5 left-2.5"><PlatformBadge listing={listing} /></span>
             {listing.featured && !soldOut && (
@@ -115,10 +129,10 @@ function ProductCard({ listing }) {
             </div>
             <VerifiedSeller compact />
           </div>
-          <Link to={`/product/${listing.id}`} className="font-semibold leading-snug line-clamp-2 hover:text-lime transition-colors">
+          <Link to={`/product/${listing.id}`} className="tilt-layer font-semibold leading-snug line-clamp-2 hover:text-lime transition-colors" style={{ '--z': '12px', '--sx': '-3px', '--sy': '-2px' }}>
             {listing.title}
           </Link>
-          <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+          <div className="tilt-layer mt-auto flex items-end justify-between gap-2 pt-2" style={{ '--z': '28px', '--sx': '-4px', '--sy': '-3px' }}>
             <div className="min-w-0">
               <div className="font-display text-xl md:text-2xl text-bone">{formatPrice(listing.price_ngn, currency)}</div>
               <span className={`inline-block mt-1.5 text-[10px] font-display border px-1.5 py-0.5 ${toneClass[stock.tone]}`}>

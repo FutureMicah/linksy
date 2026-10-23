@@ -29,10 +29,28 @@ export default function FeaturedCarousel() {
   const trackRef = useRef(null)
   const drag = useRef({ active: false, startX: 0, dx: 0 })
   const holdTimer = useRef(null)
+  const prevIndex = useRef(0)
 
   useEffect(() => () => clearTimeout(holdTimer.current), [])
 
   const safeIndex = n ? index % n : 0
+
+  // depth-rotate: the newly active slide swings in on Y, direction follows the move (wraps count as a step)
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track || reducedMotion()) {
+      prevIndex.current = safeIndex
+      return
+    }
+    const el = track.children[safeIndex]
+    if (!el) return
+    const dir = safeIndex >= prevIndex.current ? 1 : -1
+    prevIndex.current = safeIndex
+    el.style.setProperty('--rot', `${dir * 12}deg`)
+    el.classList.remove('depth-in')
+    void el.offsetWidth // restart the keyframe
+    el.classList.add('depth-in')
+  }, [safeIndex])
   const paused = hover || focus || hold || n < 2
 
   // auto-rotate every ~5s; restarts whenever the slide changes
@@ -120,7 +138,7 @@ export default function FeaturedCarousel() {
                 aria-roledescription="slide"
                 aria-label={`${i + 1} of ${n}`}
                 aria-hidden={i !== safeIndex}
-                className="relative h-[300px] w-full shrink-0 md:h-[380px]"
+                className="slide-3d relative h-[300px] w-full shrink-0 md:h-[380px]"
               >
                 <Cover
                   listing={l}
