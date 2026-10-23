@@ -21,7 +21,7 @@ export default function Countdown() {
   const [now, setNow] = useState(() => new Date())
   const [dismissed, setDismissed] = useState(() => {
     try {
-      return localStorage.getItem('linksy-xmas-strip-hidden') === String(new Date().getFullYear())
+      return localStorage.getItem('linksy-holiday-strip-hidden') === String(new Date().getFullYear())
     } catch {
       return false
     }
@@ -38,7 +38,7 @@ export default function Countdown() {
   const target = nextDec1(now)
   const hide = () => {
     try {
-      localStorage.setItem('linksy-xmas-strip-hidden', String(new Date().getFullYear()))
+      localStorage.setItem('linksy-holiday-strip-hidden', String(new Date().getFullYear()))
     } catch {
       /* private mode: still hide for this visit */
     }
@@ -48,10 +48,10 @@ export default function Countdown() {
   return (
     <div role="status" aria-live="off" className="xmas-strip">
       <div className="xmas-strip-inner">
-        <span>🎄 Christmas Deals Loading ·</span>
+        <span>Holiday Deals Loading ✨</span>
         <span className="xmas-count">{fmt(target - now)}</span>
       </div>
-      <button type="button" onClick={hide} aria-label="dismiss christmas deals banner" className="xmas-close">
+      <button type="button" onClick={hide} aria-label="dismiss holiday deals banner" className="xmas-close">
         ×
       </button>
     </div>

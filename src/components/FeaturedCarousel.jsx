@@ -106,7 +106,7 @@ export default function FeaturedCarousel() {
     <section
       aria-roledescription="carousel"
       aria-label="Featured listings"
-      className="relative overflow-hidden rounded-[2rem] border border-white bg-panel shadow-[0_30px_60px_-36px_rgba(14,124,134,0.45)] md:rounded-[2.5rem]"
+      className="deal-ring relative overflow-hidden rounded-[2rem] border border-white bg-panel shadow-[0_30px_60px_-36px_rgba(14,124,134,0.45)] md:rounded-[2.5rem]"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onFocus={() => setFocus(true)}

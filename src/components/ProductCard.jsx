@@ -7,6 +7,7 @@ import { categoryById } from '../config.js'
 import Cover from './Cover.jsx'
 import VerifiedSeller from './VerifiedSeller.jsx'
 import { gsap, reducedMotion } from '../lib/motion.js'
+import { burstConfetti } from '../lib/confetti.js'
 
 const toneClass = {
   lime: 'text-lime border-lime/40 bg-lime/5',
@@ -14,7 +15,7 @@ const toneClass = {
   danger: 'text-danger border-danger/50 bg-danger/5',
 }
 
-function ProductCard({ listing }) {
+function ProductCard({ listing, hot = false }) {
   const currency = useStore((s) => s.currency)
   const addToCart = useStore((s) => s.addToCart)
   const stock = stockLabel(listing)
@@ -91,6 +92,7 @@ function ProductCard({ listing }) {
     const ok = addToCart(listing.id)
     if (ok && btnRef.current && !reducedMotion()) {
       gsap.fromTo(btnRef.current, { scale: 0.9 }, { scale: 1, duration: 0.5, ease: 'elastic.out(1, 0.4)' })
+      burstConfetti(btnRef.current)
     }
   }
 
@@ -114,8 +116,9 @@ function ProductCard({ listing }) {
             {listing.featured && !soldOut && (
               <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
             )}
+            {hot && !soldOut && <span className="hot-pill" aria-hidden="true">🔥 Hot right now</span>}
             {listing.featured && !soldOut && (
-              <span className="festive-ribbon" aria-hidden="true">Festive Deal</span>
+              <span className="festive-ribbon" aria-hidden="true">Holiday Deal</span>
             )}
             {soldOut && (
               <span className="absolute inset-0 grid place-items-center bg-ink/75 font-display text-danger text-lg tracking-widest">

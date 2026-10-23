@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import ProductCard from '../components/ProductCard.jsx'
@@ -8,7 +8,7 @@ import Hero from '../components/Hero.jsx'
 import Marquee from '../components/Marquee.jsx'
 import FeaturedCarousel from '../components/FeaturedCarousel.jsx'
 import { CATEGORIES, categoryById } from '../config.js'
-import { useReveal } from '../lib/motion.js'
+import { useReveal, reducedMotion } from '../lib/motion.js'
 
 const FAQS = [
   { q: 'How long does delivery take?', a: 'Usually within minutes of payment being confirmed. Credentials are sent to your WhatsApp chat.' },
@@ -60,6 +60,28 @@ export default function Home() {
     setParams(q.trim() ? { q: q.trim() } : {})
   }
 
+  // the 3 most recently created live listings get the floating hot pill
+  const hotIds = useMemo(() => {
+    const live = listings.filter((l) => l.status === 'active' && l.stock > 0)
+    return new Set([...live].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 3).map((l) => l.id))
+  }, [listings])
+
+  // one-time shimmer on section headers as they scroll into view
+  useEffect(() => {
+    const heads = document.querySelectorAll('[data-shine]:not(.shine-in)')
+    if (!heads.length || typeof IntersectionObserver === 'undefined' || reducedMotion()) return
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('shine-in')
+          io.unobserve(e.target)
+        }
+      })
+    }, { threshold: 0.6 })
+    heads.forEach((h) => io.observe(h))
+    return () => io.disconnect()
+  }, [activeCat, listings.length])
+
   const stats = useMemo(() => {
     const active = listings.filter((l) => l.status === 'active' && l.stock > 0)
     return [
@@ -79,7 +101,9 @@ export default function Home() {
           </section>
           <Marquee items={['Gaming accounts', 'Social accounts', 'Gift cards', 'Naira pricing', 'Bank transfer', 'Delivered in chat']} />
 
-          <section data-reveal className="snap-row md:grid md:grid-cols-3 md:overflow-visible md:snap-none md:gap-4" aria-label="Categories">
+          <section data-reveal aria-label="Categories">
+            <h2 className="shine-head font-display text-xl mb-4" data-shine>Shop by category</h2>
+            <div className="snap-row md:grid md:grid-cols-3 md:overflow-visible md:snap-none md:gap-4">
             {CATEGORIES.map((c) => (
               <Link
                 key={c.id}
@@ -97,6 +121,7 @@ export default function Home() {
                 </span>
               </Link>
             ))}
+            </div>
           </section>
           <section data-reveal className="grid gap-4 md:grid-cols-3" aria-label="Why choose linksy">
             <div className="card p-6 flex flex-col gap-2"><span className="font-display text-xs text-cyan">01</span><h3 className="font-display text-lg">Instant chat delivery</h3><p className="text-muted text-sm">Your credentials land in your WhatsApp chat the moment payment is confirmed.</p></div>
@@ -105,12 +130,12 @@ export default function Home() {
           </section>
 
           <section data-reveal aria-label="Browse">
-            <h2 className="font-display text-xl mb-4"><span data-io="line" data-io-stagger="0"><span data-io="crawl">Browse the wall</span></span></h2>
+            <h2 className="shine-head font-display text-xl mb-4" data-shine><span data-io="line" data-io-stagger="0"><span data-io="crawl">Browse the wall</span></span></h2>
             <ArtStrip items={listings.filter((l) => l.status !== 'hidden').slice(0, 10)} />
           </section>
 
           <section data-reveal aria-label="How it works">
-            <h2 className="font-display text-xl mb-4" data-io="slide" data-head>How it works</h2>
+            <h2 className="shine-head font-display text-xl mb-4" data-io="slide" data-head data-shine>How it works</h2>
             <ol className="grid gap-4 md:grid-cols-3">
               <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">1</span><div><p className="font-display">Pick listing</p><p className="text-muted text-sm">Choose the account or gift card you want.</p></div></li>
               <li className="card p-6 flex gap-4"><span className="grad-text font-display text-3xl">2</span><div><p className="font-display">Pay by bank transfer</p><p className="text-muted text-sm">Send the exact naira amount to the account shown at checkout.</p></div></li>
@@ -119,7 +144,7 @@ export default function Home() {
           </section>
 
           <section data-reveal aria-label="FAQ">
-            <h2 className="font-display text-xl mb-4" data-io="crawl">Questions</h2>
+            <h2 className="shine-head font-display text-xl mb-4" data-io="crawl" data-shine>Questions</h2>
             <div className="flex flex-col gap-2">
               {FAQS.map((f) => (
                 <details key={f.q} className="card p-5 group">
@@ -180,7 +205,7 @@ export default function Home() {
       ) : (
         <div key={`${category}-${q}-${inStockOnly}-${maxPrice}-${sort}`} className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
           {results.map((l) => (
-            <ProductCard key={l.id} listing={l} />
+            <ProductCard key={l.id} listing={l} hot={hotIds.has(l.id)} />
           ))}
         </div>
       )}
