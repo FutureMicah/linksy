@@ -18,6 +18,8 @@ export const useStore = create(
   persist(
     (set, get) => ({
       currency: 'NGN',
+      spiderOn: true, // footer toggle for the screen spider (persisted)
+      setSpiderOn: (v) => set({ spiderOn: !!v }),
       listings: SEED_LISTINGS,
       cart: [], // [{ id, qty }]
       orders: [],
