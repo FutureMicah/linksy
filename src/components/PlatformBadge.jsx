@@ -13,6 +13,7 @@ export default function PlatformBadge({ listing, size = 'md' }) {
       title={p.name}
     >
       <img className={`${img} object-contain`} src={`/logos/${p.logo}.svg`} alt={`${p.name} logo`} loading="lazy" decoding="async"
+        width={size === 'lg' ? 36 : 24} height={size === 'lg' ? 36 : 24}
         style={{ filter: 'brightness(0) invert(1)' }} />
     </span>
   )

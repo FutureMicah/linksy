@@ -2,11 +2,11 @@ import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import InstallPrompt from './components/InstallPrompt.jsx'
-import Home from './pages/Home.jsx'
 import { initSmoothScroll, getLenis } from './lib/lenis.js'
 import { ScrollTrigger } from './lib/motion.js'
 
-// route-level code splitting for everything except the storefront landing
+// route-level code splitting: every page, including the storefront home, is its own chunk
+const Home = lazy(() => import('./pages/Home.jsx'))
 const Product = lazy(() => import('./pages/Product.jsx'))
 const Cart = lazy(() => import('./pages/Cart.jsx'))
 const Checkout = lazy(() => import('./pages/Checkout.jsx'))

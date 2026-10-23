@@ -1,16 +1,17 @@
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense, lazy, useEffect, useRef } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { getLenis } from '../lib/lenis.js'
 import Magnetic from './Magnetic.jsx'
 import { ScrollProgress, CursorGlow, useRipple, useScrollFx, useScrollReactive } from './fx.jsx'
-import Aurora from './Aurora.jsx'
-import Spider from './Spider.jsx'
-import FloatingArt from './FloatingArt.jsx'
-import Countdown from './Countdown.jsx'
-import BackToTop from './BackToTop.jsx'
-import HeaderSearch from './HeaderSearch.jsx'
+// decorative / non-critical layers load after first paint so the shell JS stays small
+const Aurora = lazy(() => import('./Aurora.jsx'))
+const Spider = lazy(() => import('./Spider.jsx'))
+const FloatingArt = lazy(() => import('./FloatingArt.jsx'))
+const Countdown = lazy(() => import('./Countdown.jsx'))
+const BackToTop = lazy(() => import('./BackToTop.jsx'))
+const HeaderSearch = lazy(() => import('./HeaderSearch.jsx'))
 
 const linkCls = ({ isActive }) =>
   `relative transition-colors ${isActive ? 'text-lime-ink' : 'text-muted hover:text-bone'}`
@@ -93,11 +94,21 @@ export default function Layout() {
   return (
     <div className="grain min-h-screen flex flex-col">
       <div className="ambient" />
-      <FloatingArt key={pathname} />
+      <Suspense fallback={null}>
+        <FloatingArt key={pathname} />
+      </Suspense>
       <ScrollProgress />
-      {showAurora && <Aurora />}
+      {showAurora && (
+        <Suspense fallback={null}>
+          <Aurora />
+        </Suspense>
+      )}
       <CursorGlow />
-      {spiderOn && !reducedMotion() && <Spider />}
+      {spiderOn && !reducedMotion() && (
+        <Suspense fallback={null}>
+          <Spider />
+        </Suspense>
+      )}
 
       <header ref={headerRef} className="sticky top-0 z-40 bg-ink/75 backdrop-blur-md border-b border-line">
         <div className="grad-stream absolute inset-x-0 top-0 h-[2px]" aria-hidden="true" />
@@ -117,7 +128,9 @@ export default function Layout() {
           </nav>
 
           <div data-nav className="flex items-center gap-2">
-            <HeaderSearch />
+            <Suspense fallback={null}>
+              <HeaderSearch />
+            </Suspense>
             <div className="flex border border-line text-[11px] font-display">
               {['NGN', 'USD'].map((c) => (
                 <button
@@ -153,7 +166,9 @@ export default function Layout() {
         </div>
       </header>
 
-      <Countdown />
+      <Suspense fallback={null}>
+        <Countdown />
+      </Suspense>
 
       <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 pb-28 md:pb-10 overflow-x-clip">
         <Suspense fallback={<div className="min-h-[50vh]" />}>
@@ -162,7 +177,9 @@ export default function Layout() {
           </div>
         </Suspense>
       </main>
-      <BackToTop />
+      <Suspense fallback={null}>
+        <BackToTop />
+      </Suspense>
 
 
       <nav className="app-nav md:hidden" aria-label="App">

@@ -16,3 +16,11 @@ createRoot(document.getElementById('root')).render(
     </BrowserRouter>
   </StrictMode>,
 )
+
+// remove the inline splash (index.html) once React has mounted and painted the first frame
+requestAnimationFrame(() => requestAnimationFrame(() => {
+  const s = document.getElementById('splash')
+  if (!s) return
+  s.classList.add('is-gone')
+  setTimeout(() => s.remove(), 300)
+}))
