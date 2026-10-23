@@ -41,17 +41,17 @@ export default function Cart() {
               <Cover listing={listing} className="h-full w-full" />
             </div>
             <div className="flex-1 min-w-0">
-              <Link to={`/product/${id}`} className="font-semibold hover:text-lime line-clamp-2">{listing.title}</Link>
-              <div className="text-sm text-lime font-display mt-1">{formatPrice(listing.price_ngn, currency)}</div>
+              <Link to={`/product/${id}`} className="font-semibold hover:text-lime-ink line-clamp-2">{listing.title}</Link>
+              <div className="text-sm text-lime-ink font-display mt-1">{formatPrice(listing.price_ngn, currency)}</div>
               {(listing.status !== 'active' || listing.stock < qty) && (
                 <div className="text-xs text-danger mt-1">No longer available in this quantity. Remove it to continue.</div>
               )}
             </div>
             <div className="flex flex-col items-end gap-2">
               <div className="flex items-center border border-line">
-                <button className="px-3 py-1.5 hover:text-lime" onClick={() => setQty(id, qty - 1)}>−</button>
+                <button className="px-3 py-1.5 hover:text-lime-ink" onClick={() => setQty(id, qty - 1)}>−</button>
                 <span className="px-3 font-display">{qty}</span>
-                <button className="px-3 py-1.5 hover:text-lime disabled:opacity-30" onClick={() => setQty(id, qty + 1)} disabled={qty >= listing.stock}>+</button>
+                <button className="px-3 py-1.5 hover:text-lime-ink disabled:opacity-30" onClick={() => setQty(id, qty + 1)} disabled={qty >= listing.stock}>+</button>
               </div>
               <button className="text-xs text-danger font-display" onClick={() => removeFromCart(id)}>REMOVE</button>
             </div>
@@ -67,7 +67,7 @@ export default function Cart() {
         </div>
         <div className="flex justify-between items-end">
           <span className="font-display">TOTAL</span>
-          <span className="font-display text-3xl text-lime text-glow">{formatPrice(total, currency)}</span>
+          <span className="font-display text-3xl text-lime-ink text-glow">{formatPrice(total, currency)}</span>
         </div>
         <Magnetic>
           <Link

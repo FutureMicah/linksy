@@ -12,15 +12,15 @@ import BackToTop from './BackToTop.jsx'
 import HeaderSearch from './HeaderSearch.jsx'
 
 const linkCls = ({ isActive }) =>
-  `relative transition-colors ${isActive ? 'text-lime' : 'text-muted hover:text-bone'}`
+  `relative transition-colors ${isActive ? 'text-lime-ink' : 'text-muted hover:text-bone'}`
 
 function LogoMark({ className = '' }) {
   return (
     <svg viewBox="0 0 32 32" className={className} aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="lsg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f0d9a4" />
-          <stop offset="1" stopColor="#d9b97a" />
+          <stop offset="0" stopColor="#ecfccb" />
+          <stop offset="1" stopColor="#d9f99d" />
         </linearGradient>
       </defs>
       <rect x="1" y="1" width="30" height="30" rx="9" fill="url(#lsg)" />
@@ -103,7 +103,7 @@ export default function Layout() {
           <Link data-nav to="/" className="flex items-center gap-2 shrink-0">
             <LogoMark className="w-8 h-8 shrink-0" />
             <span className="font-display text-xl md:text-2xl leading-none tracking-wide">
-              LINK<span className="text-lime">SY</span>
+              LINK<span className="text-lime-ink">SY</span>
             </span>
           </Link>
 
@@ -133,7 +133,7 @@ export default function Layout() {
                 {cartCount > 0 && (
                   <span
                     ref={badgeRef}
-                    className="absolute -top-2 -right-2 bg-gold text-ink text-[10px] font-bold min-w-5 h-5 px-1 grid place-items-center rounded-full shadow-[0_0_14px_rgba(217,185,122,0.5)]"
+                    className="absolute -top-2 -right-2 bg-lime text-ink text-[10px] font-bold min-w-5 h-5 px-1 grid place-items-center rounded-full shadow-[0_0_14px_rgba(163,230,53,0.6)]"
                   >
                     {cartCount}
                   </span>
@@ -143,21 +143,17 @@ export default function Layout() {
           </div>
         </div>
 
-        {/* mobile category strip */}
-        <div className="md:hidden border-t border-line overflow-x-auto">
-          <div className="flex gap-5 px-4 py-2.5 font-display text-xs whitespace-nowrap">
-            <NavLink to="/" end className={linkCls}>Shop</NavLink>
-            <NavLink to="/category/gaming" className={linkCls}>Gaming</NavLink>
-            <NavLink to="/category/social" className={linkCls}>Social</NavLink>
-            <NavLink to="/category/giftcards" className={linkCls}>Gift Cards</NavLink>
-            <NavLink to="/admin" className={({ isActive }) => (isActive ? 'text-amber' : 'text-muted')}>Admin</NavLink>
-          </div>
+        {/* mobile category chips */}
+        <div className="md:hidden px-4 pb-3 chip-row">
+          {[['/', 'All', true], ['/category/gaming', 'Gaming'], ['/category/social', 'Social'], ['/category/giftcards', 'Gift Cards']].map(([to, label, end]) => (
+            <NavLink key={to} to={to} end={!!end} className={({ isActive }) => `chip${isActive ? ' is-active' : ''}`}>{label}</NavLink>
+          ))}
         </div>
       </header>
 
       <Countdown />
 
-      <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 overflow-x-clip">
+      <main ref={mainRef} className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-10 pb-28 md:pb-10 overflow-x-clip">
         <Suspense fallback={<div className="min-h-[50vh]" />}>
           <div key={pathname} className="route-fade">
             <Outlet />
@@ -166,11 +162,19 @@ export default function Layout() {
       </main>
       <BackToTop />
 
+
+      <nav className="app-nav md:hidden" aria-label="App">
+        <NavLink to="/" end>{({ isActive }) => <><span>◆</span><span>Shop</span></>}</NavLink>
+        <a href="/#categories" onClick={(e) => { const el = document.getElementById('categories'); if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }) } }}><span>▦</span><span>Categories</span></a>
+        <NavLink to="/cart"><span>🛒</span><span>Cart{cartCount > 0 ? ` (${cartCount})` : ''}</span></NavLink>
+        <NavLink to="/admin"><span>⚙</span><span>Admin</span></NavLink>
+      </nav>
+
       <footer className="relative mt-10 border-t border-line">
         <div className="hairline grad-stream absolute inset-x-0 -top-px" />
         <div className="max-w-7xl mx-auto px-4 md:px-6 py-10 flex flex-col md:flex-row gap-4 md:items-center md:justify-between text-xs text-muted">
           <span className="font-display text-sm text-bone/80 tracking-wider">
-            LINK<span className="text-lime">SY</span>. DIGITAL GOODS, DELIVERED AFTER PAYMENT.
+            LINK<span className="text-lime-ink">SY</span>. DIGITAL GOODS, DELIVERED AFTER PAYMENT.
           </span>
           <span>Checkout is a manual bank transfer. Bank details are placeholders until you set them in your env.</span>
           <button

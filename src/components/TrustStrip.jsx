@@ -11,7 +11,7 @@ export default function TrustStrip() {
             {row.map((t, i) => (
               <span key={`${k}-${i}`} className="flex items-center font-display text-xs md:text-sm tracking-wide text-muted whitespace-nowrap">
                 <span className="px-5">{t}</span>
-                <span className="text-lime">✦</span>
+                <span className="text-lime-ink">✦</span>
               </span>
             ))}
           </div>

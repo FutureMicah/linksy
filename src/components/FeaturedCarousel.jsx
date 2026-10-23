@@ -106,7 +106,7 @@ export default function FeaturedCarousel() {
     <section
       aria-roledescription="carousel"
       aria-label="Featured listings"
-      className="deal-ring relative overflow-hidden rounded-[2rem] border border-white bg-panel shadow-[0_30px_60px_-36px_rgba(14,124,134,0.45)] md:rounded-[2.5rem]"
+      className="deal-ring relative overflow-hidden rounded-[2rem] border border-white bg-panel shadow-[0_30px_60px_-36px_rgba(132,204,22,0.45)] md:rounded-[2.5rem]"
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onFocus={() => setFocus(true)}
@@ -138,7 +138,7 @@ export default function FeaturedCarousel() {
                 aria-roledescription="slide"
                 aria-label={`${i + 1} of ${n}`}
                 aria-hidden={i !== safeIndex}
-                className="slide-3d relative h-[300px] w-full shrink-0 md:h-[380px]"
+                className="slide-3d relative h-[400px] w-full shrink-0 md:h-[480px]"
               >
                 <Cover
                   listing={l}
@@ -147,13 +147,13 @@ export default function FeaturedCarousel() {
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-white via-white/55 to-transparent" aria-hidden="true" />
                 <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-5 md:p-10">
-                  <span className="w-fit rounded-full bg-amber px-3 py-1 font-display text-[10px] tracking-[0.2em] text-white">
+                  <span className="w-fit rounded-full bg-lime px-3 py-1 font-display text-[10px] tracking-[0.2em] text-white">
                     FEATURED · {cat?.short?.toUpperCase()}
                   </span>
                   <h2 className="font-display text-2xl leading-tight text-bone md:text-4xl line-clamp-2 max-w-xl">{l.title}</h2>
                   <div className="flex flex-wrap items-center gap-3 pt-1">
                     <span className="font-display text-xl text-bone md:text-2xl">{formatPrice(l.price_ngn, currency)}</span>
-                    <span className="text-[10px] font-display border border-lime/40 bg-white/80 px-1.5 py-0.5 text-lime">{stock.text}</span>
+                    <span className="text-[10px] font-display border border-lime/40 bg-white/80 px-1.5 py-0.5 text-lime-ink">{stock.text}</span>
                   </div>
                   <div className="pt-1">
                     <Link

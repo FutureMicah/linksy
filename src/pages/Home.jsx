@@ -104,7 +104,7 @@ export default function Home() {
           </section>
           <Marquee items={['Gaming accounts', 'Social accounts', 'Gift cards', 'Naira pricing', 'Bank transfer', 'Delivered in chat']} />
 
-          <section data-reveal aria-label="Categories">
+          <section data-reveal aria-label="Categories" id="categories">
             <WordStagger text="Shop by category" className="shine-head font-display text-xl mb-4" data-shine />
             <div className="snap-row md:grid md:grid-cols-3 md:overflow-visible md:snap-none md:gap-4">
             {CATEGORIES.map((c) => (
@@ -115,7 +115,7 @@ export default function Home() {
               >
                 <div>
                   <div className="font-display text-2xl md:text-3xl">{c.label}</div>
-                  <div className="text-xs text-muted mt-1 font-display tracking-widest group-hover:text-lime transition-colors">
+                  <div className="text-xs text-muted mt-1 font-display tracking-widest group-hover:text-lime-ink transition-colors">
                     SHOP NOW →
                   </div>
                 </div>

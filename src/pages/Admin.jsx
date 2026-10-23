@@ -26,7 +26,7 @@ const EMPTY = {
 
 const ORDER_STATUSES = ['awaiting_transfer', 'paid', 'delivered', 'cancelled']
 
-const toneText = { lime: 'text-lime', amber: 'text-amber', danger: 'text-danger' }
+const toneText = { lime: 'text-lime-ink', amber: 'text-lime-ink', danger: 'text-danger' }
 
 export default function Admin() {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1')
@@ -46,7 +46,7 @@ export default function Admin() {
   if (!authed) {
     return (
       <form onSubmit={login} className="card p-7 max-w-sm mx-auto mt-6 flex flex-col gap-3">
-        <p className="font-display text-xs text-amber tracking-[0.3em]">RESTRICTED</p>
+        <p className="font-display text-xs text-lime-ink tracking-[0.3em]">RESTRICTED</p>
         <h1 className="font-display text-3xl">Owner access</h1>
         <p className="text-xs text-muted">Enter the admin PIN from your .env.local (VITE_ADMIN_PIN).</p>
         <input className="input" type="password" value={pin} onChange={(e) => setPin(e.target.value)} placeholder="Admin PIN" autoFocus />
@@ -80,7 +80,7 @@ function Dashboard({ onLock }) {
     <div ref={scope} className="flex flex-col gap-6">
       <div data-reveal className="flex flex-wrap items-center gap-3 justify-between">
         <div>
-          <p className="font-display text-xs text-amber tracking-[0.3em]">OWNER DASHBOARD</p>
+          <p className="font-display text-xs text-lime-ink tracking-[0.3em]">OWNER DASHBOARD</p>
           <h1 className="font-display text-4xl md:text-5xl">Admin</h1>
         </div>
         <button className="btn-ghost !py-2" onClick={onLock}>LOCK</button>
@@ -107,7 +107,7 @@ function Dashboard({ onLock }) {
 }
 
 function Stat({ label, value, tone = 'olive' }) {
-  const color = tone === 'lime' ? 'text-lime' : tone === 'amber' ? 'text-amber' : 'text-bone'
+  const color = tone === 'lime' ? 'text-lime-ink' : tone === 'amber' ? 'text-lime-ink' : 'text-bone'
   return (
     <div className="card p-4">
       <div className="text-[11px] font-display text-muted uppercase tracking-wider">{label}</div>
@@ -162,7 +162,7 @@ function Listings() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 border transition-colors ${filter === f ? 'border-lime text-lime shadow-[0_0_16px_-4px_rgba(217,185,122,0.6)]' : 'border-line text-muted hover:text-bone'}`}
+              className={`px-3 py-1.5 border transition-colors ${filter === f ? 'border-lime text-lime-ink shadow-[0_0_16px_-4px_rgba(217,185,122,0.6)]' : 'border-line text-muted hover:text-bone'}`}
             >
               {f.toUpperCase()}
             </button>
@@ -237,7 +237,7 @@ function ListingForm({ initial, onSave, onCancel }) {
       }}
       className="card p-5 grid md:grid-cols-2 gap-3 border-lime/30"
     >
-      <h2 className="font-display md:col-span-2 text-lime">{isNew ? 'NEW LISTING' : 'EDIT LISTING'}</h2>
+      <h2 className="font-display md:col-span-2 text-lime-ink">{isNew ? 'NEW LISTING' : 'EDIT LISTING'}</h2>
       <div>
         <label className="label">Title</label>
         <input className="input" value={f.title} onChange={set('title')} required />
@@ -315,7 +315,7 @@ function Orders() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2 text-xs">
-        <span className="rounded-full bg-lime/10 text-lime px-3 py-1 font-medium">In escrow: {escrowCount}</span>
+        <span className="rounded-full bg-lime/10 text-lime-ink px-3 py-1 font-medium">In escrow: {escrowCount}</span>
         <span className="rounded-full bg-danger/10 text-danger px-3 py-1 font-medium">Open disputes: {disputeCount}</span>
       </div>
       {orders.map((o) => {
@@ -325,7 +325,7 @@ function Orders() {
         <div key={o.id} className="card p-4 flex flex-col gap-2">
           <div className="flex flex-wrap justify-between gap-2">
             <div>
-              <div className="font-display text-lime">{o.id}</div>
+              <div className="font-display text-lime-ink">{o.id}</div>
               <div className="text-xs text-muted">{new Date(o.created_at).toLocaleString('en-NG')}</div>
             </div>
             <div className="font-display text-lg">{formatPrice(o.total_ngn, 'NGN')}</div>
@@ -367,7 +367,7 @@ function Orders() {
               <button
                 key={s}
                 onClick={() => setOrderStatus(o.id, s)}
-                className={`px-2.5 py-1.5 border transition-colors ${o.status === s ? 'border-lime text-lime' : 'border-line text-muted hover:text-bone'}`}
+                className={`px-2.5 py-1.5 border transition-colors ${o.status === s ? 'border-lime text-lime-ink' : 'border-line text-muted hover:text-bone'}`}
               >
                 {s.replace('_', ' ').toUpperCase()}
               </button>

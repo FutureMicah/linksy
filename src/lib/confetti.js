@@ -1,6 +1,6 @@
 // CSS-only confetti burst: 12 pieces, transform/opacity, removed after the animation.
 // Fires once per browser session (sessionStorage flag). Callers check reducedMotion first.
-const COLORS = ['#d9b15c', '#f6e7b8', '#0e7c86', '#8a1c2b', '#ffffff']
+const COLORS = ['#d9b15c', '#f6e7b8', '#84cc16', '#8a1c2b', '#ffffff']
 
 export function burstConfetti(anchor) {
   try {

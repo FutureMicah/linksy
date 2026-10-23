@@ -8,7 +8,7 @@ export default function Marquee({ items }) {
             {row.map((t, i) => (
               <span key={`${k}-${i}`} className="font-display text-sm md:text-base tracking-widest text-muted flex items-center">
                 <span className="px-6">{t}</span>
-                <span className="text-lime">✦</span>
+                <span className="text-lime-ink">✦</span>
               </span>
             ))}
           </div>

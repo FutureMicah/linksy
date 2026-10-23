@@ -99,8 +99,8 @@ export default function Checkout() {
           </label>
 
           {method === 'transfer' && (
-            <div className="border border-amber/50 p-4 text-sm bg-amber/5 shadow-[0_0_30px_-12px_rgba(255,184,59,0.6)]">
-              <div className="font-display text-amber text-xs mb-2">BANK DETAILS (PLACEHOLDER, REPLACE IN .env.local)</div>
+            <div className="border border-lime/50 p-4 text-sm bg-amber/5 shadow-[0_0_30px_-12px_rgba(255,184,59,0.6)]">
+              <div className="font-display text-lime-ink text-xs mb-2">BANK DETAILS (PLACEHOLDER, REPLACE IN .env.local)</div>
               <div>Bank: <span className="text-bone">{CONFIG.bank.name}</span></div>
               <div>Account name: <span className="text-bone">{CONFIG.bank.accountName}</span></div>
               <div>Account number: <span className="text-bone font-display">{CONFIG.bank.accountNumber}</span></div>
@@ -139,7 +139,7 @@ export default function Checkout() {
         ))}
         <div className="border-t border-line pt-3 flex justify-between">
           <span className="font-display">TOTAL</span>
-          <span className="font-display text-lime text-xl">{formatPrice(total, currency)}</span>
+          <span className="font-display text-lime-ink text-xl">{formatPrice(total, currency)}</span>
         </div>
       </aside>
     </div>

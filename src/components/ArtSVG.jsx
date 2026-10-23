@@ -27,9 +27,9 @@ const GIFT = {
   xbox: { a: '#22c55e', b: '#a3e635', c: '#052e16', m: 'ring' },
 }
 const CAT = {
-  gaming: { a: '#0e7c86', b: '#7c3aed', c: '#0b1d24', m: 'hex', fig: true },
+  gaming: { a: '#84cc16', b: '#7c3aed', c: '#0b1d24', m: 'hex', fig: true },
   social: { a: '#ec4899', b: '#22d3ee', c: '#1e1b4b', m: 'wave', fig: false },
-  giftcards: { a: '#f59e0b', b: '#0e7c86', c: '#1c1305', m: 'box', fig: false },
+  giftcards: { a: '#f59e0b', b: '#84cc16', c: '#1c1305', m: 'box', fig: false },
 }
 
 const BRAND_KEYS = [

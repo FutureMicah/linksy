@@ -11,9 +11,9 @@ import ReviewForm from '../components/ReviewForm.jsx'
 import Magnetic from '../components/Magnetic.jsx'
 
 const STATUS_COPY = {
-  awaiting_transfer: { label: 'AWAITING PAYMENT', tone: 'text-amber', note: 'Send the exact transfer, then share proof on WhatsApp.' },
-  paid: { label: 'FUNDS IN ESCROW', tone: 'text-lime', note: 'Payment verified. Linksy holds your money until you confirm delivery.' },
-  delivered: { label: 'DELIVERED', tone: 'text-lime', note: 'Details sent. Check the account or code within 24h, then confirm delivery.' },
+  awaiting_transfer: { label: 'AWAITING PAYMENT', tone: 'text-lime-ink', note: 'Send the exact transfer, then share proof on WhatsApp.' },
+  paid: { label: 'FUNDS IN ESCROW', tone: 'text-lime-ink', note: 'Payment verified. Linksy holds your money until you confirm delivery.' },
+  delivered: { label: 'DELIVERED', tone: 'text-lime-ink', note: 'Details sent. Check the account or code within 24h, then confirm delivery.' },
   cancelled: { label: 'CANCELLED', tone: 'text-danger', note: 'This order was cancelled and stock returned.' },
 }
 
@@ -77,12 +77,12 @@ export default function Order() {
         {isRefunded && <p className="mt-2 text-sm text-danger font-medium">Refunded to buyer.</p>}
       </div>
 
-      {notice && <div data-reveal className="card p-4 text-sm text-lime">{notice}</div>}
+      {notice && <div data-reveal className="card p-4 text-sm text-lime-ink">{notice}</div>}
 
       {order.status === 'awaiting_transfer' && (
         <div data-reveal className="card p-6 flex flex-col gap-2 text-sm">
           <h2 className="font-display">PAY THIS EXACT AMOUNT</h2>
-          <div className="font-display text-3xl text-lime">{total}</div>
+          <div className="font-display text-3xl text-lime-ink">{total}</div>
           <div>Bank: {CONFIG.bank.name}</div>
           <div>Account name: {CONFIG.bank.accountName}</div>
           <div>Account number: <span className="font-display">{CONFIG.bank.accountNumber}</span></div>
@@ -128,7 +128,7 @@ export default function Order() {
             </div>
           )}
 
-          {isReleased && <p className="mt-2 text-sm text-lime font-medium">Funds released to the seller. Thanks for buying from linksy.</p>}
+          {isReleased && <p className="mt-2 text-sm text-lime-ink font-medium">Funds released to the seller. Thanks for buying from linksy.</p>}
 
           {canDispute && !disputeOpen && (
             <button onClick={() => setDisputeOpen(true)} className="mt-4 text-sm text-danger underline underline-offset-4 self-start">
@@ -175,7 +175,7 @@ export default function Order() {
         ))}
         <div className="flex justify-between mt-3">
           <span className="font-display">TOTAL</span>
-          <span className="font-display text-lime">{formatPrice(order.total_ngn, currency)}</span>
+          <span className="font-display text-lime-ink">{formatPrice(order.total_ngn, currency)}</span>
         </div>
       </div>
 

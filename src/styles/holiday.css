@@ -156,8 +156,8 @@
   animation: grad-flow 7s linear infinite, gold-pulse 2.8s ease-in-out infinite;
 }
 @keyframes gold-pulse {
-  0%, 100% { box-shadow: 0 10px 24px -12px rgba(14, 124, 134, 0.6), 0 0 0 0 rgba(217, 177, 92, 0.0); }
-  50% { box-shadow: 0 10px 24px -12px rgba(14, 124, 134, 0.6), 0 0 18px 2px rgba(217, 177, 92, 0.55); }
+  0%, 100% { box-shadow: 0 10px 24px -12px rgba(132, 204, 22, 0.6), 0 0 0 0 rgba(217, 177, 92, 0.0); }
+  50% { box-shadow: 0 10px 24px -12px rgba(132, 204, 22, 0.6), 0 0 18px 2px rgba(217, 177, 92, 0.55); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -178,7 +178,7 @@
   inset: 0;
   border-radius: inherit;
   padding: 2px;
-  background: conic-gradient(from var(--ring-a), #d9b15c, #fff3c4, #0e7c86, #8a1c2b, #d9b15c);
+  background: conic-gradient(from var(--ring-a), #d9b15c, #fff3c4, #84cc16, #8a1c2b, #d9b15c);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);

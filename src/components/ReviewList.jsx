@@ -25,7 +25,7 @@ export default function ReviewList({ reviews }) {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="font-medium text-sm">{publicName(r.name)}</span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-lime/10 text-lime text-[10px] font-medium px-2 py-0.5">
+                <span className="inline-flex items-center gap-1 rounded-full bg-lime/10 text-lime-ink text-[10px] font-medium px-2 py-0.5">
                   ✓ Verified buyer
                 </span>
               </div>

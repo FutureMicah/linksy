@@ -6,7 +6,7 @@ export default function Stars({ value = 0, onChange, size = 'h-4 w-4', label = '
       {[1, 2, 3, 4, 5].map((n) => {
         const on = n <= Math.round(value)
         const star = (
-          <svg viewBox="0 0 24 24" className={`${size} ${on ? 'text-amber' : 'text-line'}`} fill="currentColor" aria-hidden="true">
+          <svg viewBox="0 0 24 24" className={`${size} ${on ? 'text-lime-ink' : 'text-line'}`} fill="currentColor" aria-hidden="true">
             <path d="M12 2.8l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.6 6.1 20.8l1.2-6.5L2.5 9.7l6.6-.9z" />
           </svg>
         )

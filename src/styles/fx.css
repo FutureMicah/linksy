@@ -49,7 +49,7 @@
 .ripple {
   position: absolute;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(14, 124, 134, 0.32) 0%, rgba(14, 124, 134, 0) 70%);
+  background: radial-gradient(circle, rgba(132, 204, 22, 0.32) 0%, rgba(132, 204, 22, 0) 70%);
   transform: scale(0);
   pointer-events: none;
   animation: ripple-out 0.7s var(--ease-out-expo) forwards;
@@ -65,7 +65,7 @@
   height: 360px;
   margin: -180px 0 0 -180px;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(14, 124, 134, 0.16) 0%, rgba(14, 124, 134, 0) 65%);
+  background: radial-gradient(circle, rgba(132, 204, 22, 0.16) 0%, rgba(132, 204, 22, 0) 65%);
   transition: opacity 0.35s ease;
   mix-blend-mode: multiply;
   z-index: 1;
@@ -92,9 +92,9 @@
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
-.aurora-b1 { width: 46vmax; height: 46vmax; left: -14vmax; top: -10vmax; background: #c6e04a; animation: aurora-a 34s; }
-.aurora-b2 { width: 40vmax; height: 40vmax; right: -12vmax; top: 30%; background: #d9b97a; animation: aurora-b 42s; }
-.aurora-b3 { width: 34vmax; height: 34vmax; left: 25%; bottom: -14vmax; background: #c6e04a; animation: aurora-c 38s; opacity: 0.16; }
+.aurora-b1 { width: 46vmax; height: 46vmax; left: -14vmax; top: -10vmax; background: #a3e635; animation: aurora-a 34s; }
+.aurora-b2 { width: 40vmax; height: 40vmax; right: -12vmax; top: 30%; background: #d9f99d; animation: aurora-b 42s; }
+.aurora-b3 { width: 34vmax; height: 34vmax; left: 25%; bottom: -14vmax; background: #a3e635; animation: aurora-c 38s; opacity: 0.16; }
 @keyframes aurora-a {
   0% { transform: translate3d(0, 0, 0) scale(1); }
   100% { transform: translate3d(14vmax, 8vmax, 0) scale(1.12); }
@@ -134,10 +134,10 @@
   scale: 0.9;
   pointer-events: none;
   transition: opacity 0.35s var(--ease-out-expo), translate 0.45s var(--ease-out-expo), scale 0.45s var(--ease-out-expo), box-shadow 0.3s;
-  box-shadow: 0 14px 30px -14px rgba(14, 124, 134, 0.45), inset 0 1px 0 rgba(255, 255, 255, 1);
+  box-shadow: 0 14px 30px -14px rgba(132, 204, 22, 0.45), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 .back-to-top.is-on { opacity: 1; translate: 0 0; scale: 1; pointer-events: auto; }
-.back-to-top:hover { box-shadow: 0 18px 36px -12px rgba(14, 124, 134, 0.6); }
+.back-to-top:hover { box-shadow: 0 18px 36px -12px rgba(132, 204, 22, 0.6); }
 
 /* ---------- deal / price-drop badge (amber chip) ---------- */
 .deal-badge {

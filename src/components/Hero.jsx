@@ -114,7 +114,7 @@ export default function Hero({ stats }) {
           <div data-hero-fade className="grid grid-cols-3 gap-3 pt-6 max-w-md">
             {stats.map((s) => (
               <div key={s.label} className="border-l border-lime/40 pl-3">
-                <div className="font-display text-3xl md:text-4xl text-lime leading-none">
+                <div className="font-display text-3xl md:text-4xl text-lime-ink leading-none">
                   <span data-count={s.value}>0</span>
                 </div>
                 <div className="text-[11px] font-display tracking-wider text-muted mt-1 uppercase">{s.label}</div>

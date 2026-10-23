@@ -10,8 +10,8 @@ import { gsap, reducedMotion } from '../lib/motion.js'
 import { burstConfetti } from '../lib/confetti.js'
 
 const toneClass = {
-  lime: 'text-lime border-lime/40 bg-lime/5',
-  amber: 'text-amber border-amber/50 bg-amber/5',
+  lime: 'text-lime-ink border-lime/40 bg-lime/5',
+  amber: 'text-lime-ink border-lime/50 bg-amber/5',
   danger: 'text-danger border-danger/50 bg-danger/5',
 }
 
@@ -106,7 +106,7 @@ function ProductCard({ listing, hot = false }) {
         className="tile tilt card sheen flex flex-col overflow-hidden group"
       >
         <Link to={`/product/${listing.id}`} className="block">
-          <div className="tile-media relative h-40 md:h-48">
+          <div className="tile-media relative h-56 md:h-72">
             <div data-drift="0.12" className="h-full w-full scale-[1.12]">
               <div data-cparallax className="tilt-layer h-full w-full" style={{ '--z': '18px', '--sx': '-7px', '--sy': '-5px' }}>
                 <Cover listing={listing} className="h-full w-full" />
@@ -114,7 +114,7 @@ function ProductCard({ listing, hot = false }) {
             </div>
             <span className="absolute bottom-2.5 left-2.5"><PlatformBadge listing={listing} /></span>
             {listing.featured && !soldOut && (
-              <span className="absolute top-2.5 left-2.5 bg-amber text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
+              <span className="absolute top-2.5 left-2.5 bg-lime text-ink font-display text-[10px] px-2 py-0.5">FEATURED</span>
             )}
             {hot && !soldOut && <span className="hot-pill" aria-hidden="true">🔥 Hot right now</span>}
             {listing.featured && !soldOut && (
@@ -135,12 +135,12 @@ function ProductCard({ listing, hot = false }) {
             </div>
             <VerifiedSeller compact />
           </div>
-          <Link to={`/product/${listing.id}`} className="tilt-layer font-semibold leading-snug line-clamp-2 hover:text-lime transition-colors" style={{ '--z': '12px', '--sx': '-3px', '--sy': '-2px' }}>
+          <Link to={`/product/${listing.id}`} className="tilt-layer font-display font-extrabold text-base md:text-lg leading-tight line-clamp-2 hover:text-lime-ink transition-colors" style={{ '--z': '12px', '--sx': '-3px', '--sy': '-2px' }}>
             {listing.title}
           </Link>
           <div className="tilt-layer mt-auto flex items-end justify-between gap-2 pt-2" style={{ '--z': '28px', '--sx': '-4px', '--sy': '-3px' }}>
             <div className="min-w-0">
-              <div className="font-display text-xl md:text-2xl text-bone">{formatPrice(listing.price_ngn, currency)}</div>
+              <div className="pill-price text-base md:text-lg">{formatPrice(listing.price_ngn, currency)}</div>
               <span className={`inline-block mt-1.5 text-[10px] font-display border px-1.5 py-0.5 ${toneClass[stock.tone]}`}>
                 {stock.text}
               </span>

@@ -14,7 +14,7 @@ import { CONFIG } from '../config.js'
 import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { useReveal } from '../lib/motion.js'
 
-const toneText = { lime: 'text-lime', amber: 'text-amber', danger: 'text-danger' }
+const toneText = { lime: 'text-lime-ink', amber: 'text-lime-ink', danger: 'text-danger' }
 
 export default function Product() {
   const { id } = useParams()
@@ -62,9 +62,9 @@ export default function Product() {
   return (
     <div ref={scope} className="flex flex-col gap-8">
       <nav data-reveal className="text-xs font-display text-muted flex flex-wrap gap-2">
-        <Link to="/" className="hover:text-lime">SHOP</Link>
+        <Link to="/" className="hover:text-lime-ink">SHOP</Link>
         <span>/</span>
-        <Link to={`/category/${listing.category}`} className="hover:text-lime">{cat?.short.toUpperCase()}</Link>
+        <Link to={`/category/${listing.category}`} className="hover:text-lime-ink">{cat?.short.toUpperCase()}</Link>
         <span>/</span>
         <span className="text-bone truncate">{listing.brand.toUpperCase()}</span>
       </nav>
@@ -77,7 +77,7 @@ export default function Product() {
 
         <div className="flex flex-col gap-5">
           <div data-pdetail>
-            <p className="font-display text-xs text-amber tracking-[0.25em]">{listing.brand.toUpperCase()}</p>
+            <p className="font-display text-xs text-lime-ink tracking-[0.25em]">{listing.brand.toUpperCase()}</p>
             <h1 className="font-display text-3xl md:text-5xl leading-[0.95] mt-2">{listing.title}</h1>
           </div>
 
@@ -89,7 +89,7 @@ export default function Product() {
           </div>
 
           <div data-pdetail className="flex items-end gap-4 flex-wrap">
-            <span className="font-display text-4xl md:text-5xl text-lime text-glow">{formatPrice(listing.price_ngn, currency)}</span>
+            <span className="font-display text-4xl md:text-5xl text-lime-ink text-glow">{formatPrice(listing.price_ngn, currency)}</span>
             {currency === 'NGN' && <span className="text-muted text-sm mb-2">≈ {formatPrice(listing.price_ngn, 'USD')}</span>}
           </div>
 

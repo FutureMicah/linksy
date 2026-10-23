@@ -24,7 +24,7 @@ export default function ArtStrip({ items }) {
           </div>
           <div className="p-3 flex flex-col gap-1">
             <span className="font-display text-sm line-clamp-1">{l.title}</span>
-            <span className="font-display text-lime text-sm">{formatPrice(l.price_ngn, currency)}</span>
+            <span className="font-display text-lime-ink text-sm">{formatPrice(l.price_ngn, currency)}</span>
           </div>
         </Link>
       ))}
