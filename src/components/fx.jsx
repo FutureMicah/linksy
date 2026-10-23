@@ -74,6 +74,8 @@ export function CursorGlow() {
   return <div ref={ref} aria-hidden="true" className="cursor-glow fixed left-0 top-0 pointer-events-none" style={{ opacity: 0 }} />
 }
 
+const IO_STAGGER_CAP = 8 // max 8 steps: 75ms x 8 = 600ms worst case
+
 // data-io reveal: "fade" | "slide" | "crawl" | "line" (underline draws in), stagger via data-io-stagger (ms per sibling)
 // data-drift="0.1": element shifts vertically at a depth proportional to its distance from screen centre
 // data-head: header scales and fades as it leaves the centre of the screen
@@ -128,7 +130,8 @@ export function useScrollFx(rootRef, key) {
         el.dataset.ioOn = '1'
         const st = Number(el.dataset.ioStagger || 0)
         if (st && el.parentElement) {
-          const i = Array.prototype.indexOf.call(el.parentElement.children, el)
+          // cap the index so long grids never make the last cards wait more than IO_STAGGER_CAP * st ms
+          const i = Math.min(Array.prototype.indexOf.call(el.parentElement.children, el), IO_STAGGER_CAP)
           el.style.setProperty('--io-d', `${i * st}ms`)
         }
         if (rm) el.classList.add('io-in')

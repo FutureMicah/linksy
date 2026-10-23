@@ -133,7 +133,7 @@ export default function Product() {
 
       {related.length > 0 && (
         <section>
-          <h2 data-reveal className="font-display text-xl mb-4">MORE {cat?.short.toUpperCase()}</h2>
+          <h2 data-io="slide" className="font-display text-xl mb-4">MORE {cat?.short.toUpperCase()}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
             {related.map((l) => (
               <ProductCard key={l.id} listing={l} />

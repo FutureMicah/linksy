@@ -44,6 +44,7 @@ function ProductCard({ listing }) {
         if (e.pointerType !== 'mouse') {
           touching = true
           aim(e, 5)
+          el.classList.add('swept')
         }
       }
       const up = () => {
@@ -82,7 +83,7 @@ function ProductCard({ listing }) {
   }
 
   return (
-    <div data-reveal className="tile-wrap relative">
+    <div data-io="slide" data-io-stagger="75" className="tile-wrap relative">
       <span className="tile-bloom" aria-hidden="true" />
       <div
         ref={ref}

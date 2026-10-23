@@ -5,6 +5,7 @@ import { gsap, useGSAP, reducedMotion } from '../lib/motion.js'
 import { getLenis } from '../lib/lenis.js'
 import Magnetic from './Magnetic.jsx'
 import { ScrollProgress, CursorGlow, useRipple, useScrollFx } from './fx.jsx'
+import Aurora from './Aurora.jsx'
 import Spider from './Spider.jsx'
 
 const linkCls = ({ isActive }) =>
@@ -39,6 +40,8 @@ export default function Layout() {
   useScrollFx(mainRef, pathname)
   const headerRef = useRef(null)
   const badgeRef = useRef(null)
+  const cartRef = useRef(null)
+  const showAurora = pathname === '/' || pathname.startsWith('/product/')
 
   // header entrance
   useGSAP(
@@ -76,10 +79,23 @@ export default function Layout() {
     gsap.fromTo(badgeRef.current, { scale: 0.3 }, { scale: 1, duration: 0.7, ease: 'elastic.out(1, 0.4)' })
   }, [cartCount])
 
+  // cart icon bounces once each time an item is added (count goes up)
+  const prevCount = useRef(cartCount)
+  useEffect(() => {
+    const el = cartRef.current
+    if (el && cartCount > prevCount.current && !reducedMotion()) {
+      el.classList.remove('cart-bump')
+      void el.offsetWidth // restart the animation if it is already running
+      el.classList.add('cart-bump')
+    }
+    prevCount.current = cartCount
+  }, [cartCount])
+
   return (
     <div className="grain min-h-screen flex flex-col">
       <div className="ambient" />
       <ScrollProgress />
+      {showAurora && <Aurora />}
       <CursorGlow />
       {spiderOn && !reducedMotion() && <Spider />}
 
@@ -113,7 +129,7 @@ export default function Layout() {
               ))}
             </div>
             <Magnetic strength={0.22}>
-              <Link to="/cart" className="btn-ghost !py-2 !px-3.5 relative">
+              <Link ref={cartRef} to="/cart" onAnimationEnd={(e) => e.currentTarget.classList.remove('cart-bump')} className="btn-ghost !py-2 !px-3.5 relative">
                 CART
                 {cartCount > 0 && (
                   <span
